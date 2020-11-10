@@ -1,0 +1,5 @@
+"#","ID","Name","Tab","Type","Font","Font Size","Text","Main Color","Accent Color","Surface","x_location","y_location","Width","Height","Function"
+"","0","Mauro","0","Text","None","100","Boo","(255, 255, 255)","(200, 200, 200)","Screen","30","100","","",""
+"","1","Mauro","0","Button","None","20","Type Here","(255, 255, 255)","(100, 100, 100)","Screen","50","50","50","50","boo"
+"","2","Mauro","0","Text","None","50","Test","(255, 255, 255)","(200, 200, 200)","Screen","500","100","","",""
+"","3","Mauro","0","Text","None","51","Test","(255, 255, 255)","(200, 200, 200)","Screen","500","100","","",""
