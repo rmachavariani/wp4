@@ -20,5 +20,5 @@ def fastener_selection(w,e1,e2,d2,material):
     while usable_length > (fastener_spacing*2 - d2):
         fastener_count += 1
         usable_length -= fastener_spacing
-    spacing = (w-e1-e2-d2)/fastener_count #Still not correct
-    return fastener_count,spacing #Returns the amount of fasteners and the spacing between the centre of fasteners
+    spacing = (w-e1-e2-d2)/(fastener_count-1)
+    return fastener_count,spacing
