@@ -3,8 +3,8 @@ import math as m
 # Test Data
 L = 2  # length of the backup plate
 H = 2  # height of the backup plate
-c_h = 1  # Horizontal Clearence
-c_v = 1  # Vertical Clearence
+c_h = 1  # Horizontal Clearance
+c_v = 1  # Vertical Clearance
 R = 1  # Hole Radius
 A = m.pi * pow(R, 2)
 
@@ -18,9 +18,10 @@ z_3 = z_1
 x_4 = -x_1
 z_4 = -z_1
 
+
 # Calculates center of gravity
-def cg(pos_1, pos_2, pos_3, pos_4, Area):
-    pos_cg = (pos_1 + pos_2 + pos_3 + pos_4) * Area / (pos_1 + pos_2 + pos_3 + pos_4)
+def cg(pos_1, pos_2, pos_3, pos_4, area):
+    pos_cg = (pos_1 + pos_2 + pos_3 + pos_4) * area / (pos_1 + pos_2 + pos_3 + pos_4)
     return pos_cg
 
 
