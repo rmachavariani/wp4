@@ -18,9 +18,10 @@ z_3 = z_1
 x_4 = -x_1
 z_4 = -z_1
 
+
 # Calculates center of gravity
-def cg(pos_1, pos_2, pos_3, pos_4, Area):
-    pos_cg = (pos_1 + pos_2 + pos_3 + pos_4) * Area / (pos_1 + pos_2 + pos_3 + pos_4)
+def cg(pos_1, pos_2, pos_3, pos_4, area):
+    pos_cg = (pos_1 + pos_2 + pos_3 + pos_4) * area / (pos_1 + pos_2 + pos_3 + pos_4)
     return pos_cg
 
 
