@@ -14,7 +14,7 @@ class InterfaceUpdate:
     def update_text(self):
         if self.change[0] in {"font", "text", "surface", "function"}:
             self.component.__dict__[self.change[0]] = str(self.change[1])
-        elif self.change[0] in {"tab", "font_size", "x_location", "y_location", "width", "height"}:
+        elif self.change[0] in {"tab", "id", "font_size", "x_location", "y_location", "width", "height"}:
             self.component.__dict__[self.change[0]] = int(self.change[1])
         elif self.change[0] in {"main_color", "accent_color"}:
             self.component.__dict__[self.change[0]] = literal_eval(self.change[1])
@@ -71,7 +71,7 @@ class InterfaceUpdate:
                     wr = csv.writer(file, quoting=csv.QUOTE_ALL)
                     wr.writerow(export_list[i])
 
-            print("Saved!!")
+            print("Saved!")
 
         except FileNotFoundError and PermissionError:
             print("Error saving!")
@@ -79,27 +79,59 @@ class InterfaceUpdate:
 
 class Interact:
 
-    def __init__(self, all_components):
+    def __init__(self, all_components, ui):
         self.all_components = all_components
+        self.ui = ui
 
-    def check_selection(self, event):
+    def check_selection(self, event, state):
         top_hit = False
         for component in self.all_components.total[::-1]:
-            rect = pg.Rect(int(component.x_location) - 2, int(component.y_location) - 2, int(component.hit_box[0]), int(component.hit_box[1]))
-            if rect.collidepoint((event.pos[0], event.pos[1])) and not top_hit:
-                if component.active:
-                    component.active = False
-                    component.main_color = '(255, 255, 255)'
-                else:
-                    component.active = True
-                    component.main_color = '(255, 40, 40)'
-
-                top_hit = True
-            else:
+            if int(component.surface) != 1 and component.lock == "False":
                 component.active = False
-                component.main_color = '(255, 255, 255)'
+                component.color = component.main_color
 
-    # def move_selection(self, event):
-    #     for component in self.all_components.total[::-1]:
-    #         rect = pg.Rect(int(component.x_location) - 2, int(component.y_location) - 2, int(component.hit_box[0]), int(component.hit_box[1]))
-    #         if rect.collidepoint((event.pos[0], event.pos[1])):
+                rect = pg.Rect(int(int(component.x_location) * state['scale'] - 2 + int(state['scroll_x'])),
+                               int(int(component.y_location) * state['scale'] - 2 + int(state['scroll_y'])),
+                               int(component.hit_box[0]), int(component.hit_box[1]))
+                try:
+                    if rect.collidepoint((event.pos[0] - self.ui.location_screen[0], event.pos[1] - self.ui.location_screen[1])) and not top_hit and component.text != 'EDIT':
+                        if component.active and state['deactivate']:
+                            component.active = False
+                            component.color = component.main_color
+                        else:
+                            component.active = True
+                            component.color = '(255, 40, 40)'
+
+                        top_hit = True
+                    elif state['deactivate']:
+                        component.active = False
+                        component.color = component.main_color
+
+                except AttributeError:
+                    pass
+
+    def move_selection(self, event, mouse_start_position, components_start_positions, state):
+        for i, component in enumerate(self.all_components.total):
+            if int(component.surface) != 1:
+                component_start_position = [int(components_start_positions[i][0] * state['scale'] + int(state['scroll_x'])),
+                                            int(components_start_positions[i][1] * state['scale'] + int(state['scroll_y']))]
+                rect = pg.Rect(component_start_position[0] - 2, component_start_position[1] - 2, int(component.hit_box[0]), int(component.hit_box[1]))
+                try:
+                    if rect.collidepoint((mouse_start_position[0] - self.ui.location_screen[0], mouse_start_position[1] - self.ui.location_screen[1])) and component.active:
+                        component.x_location = str(components_start_positions[i][0] + int((event.pos[0] - mouse_start_position[0]) * (1 / state['scale'])))
+                        component.y_location = str(components_start_positions[i][1] + int((event.pos[1] - mouse_start_position[1]) * (1 / state['scale'])))
+                        if int(component.y_location) < 0:
+                            component.y_location = str(0)
+                except AttributeError:
+                    pass
+
+    def edit_text(self, event):
+        if event.type == pg.KEYDOWN:
+            for component in self.all_components.total:
+                if component.active:
+                    if event.key == pg.K_BACKSPACE:
+                        component.text = component.text[:-1]
+                    elif event.key == pg.K_DELETE:
+                        component.text = ''
+                    elif event.key != pg.K_TAB and event.key != pg.K_RETURN:
+                        component.text += event.unicode
