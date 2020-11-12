@@ -3,10 +3,10 @@ import math as m
 # Test Data
 L = 2  # length of the backup plate
 H = 2  # height of the backup plate
-c_h = 1  # Horizontal Clearence
-c_v = 1  # Vertical Clearence
+c_h = 1  # Horizontal Clearance
+c_v = 1  # Vertical Clearance
 R = 1  # Hole Radius
-A = m.pi * pow(R, 2)
+A = m.pi * pow(R, 2) # Hole Area
 
 # Coordinates of a center of each fastener
 x_1 = (L / 2) - (R / 2) - c_h
