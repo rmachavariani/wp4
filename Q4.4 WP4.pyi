@@ -11,5 +11,5 @@ def fastener_selection(w,e1,d2,material): #Width, Edge1, Diameter of Hole, Mater
         return print("Please indicate the material type")
     usable_length = w - 2*e1 #determining the length where the fasteners can be
     fastener_count = int(((usable_length/d2)-1)/fastener_spacing)+1
-    spacing = (w-2*e1-d2)/(fastener_count-1)
+    spacing = (w-2*e1-d2)/(fastener_count-1) #Final spacing between holes
     return fastener_count,spacing #number of fastener and spacing between them
