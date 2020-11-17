@@ -7,17 +7,15 @@ from shapely.geometry import LineString, Point, box
 with open('data.json', 'r') as j:
     input = json.load(j)['input']
 
-
 def bearing_check(input):
     plate_data = input['plate']
     fastener_data = input['fastener']
     width = float(plate_data['width'])
     edge_vertical = float(fastener_data['edge_vertical'])
-    print(fastener_data['diameter'])
     diameter = float(fastener_data['diameter'])
     material = float(plate_data['material'])
     horizontal_spacing = float(fastener_data['horizontal_spacing'])
-    area = m.pi*(int(diameter/2)**2)
+    area = m.pi*((diameter/2)**2)
     thickness = float(plate_data['thickness'])
     wall_thickness = float(plate_data['wall_thickness'])
     allowable_stress = float(plate_data['allowable_stress'])
@@ -36,11 +34,11 @@ def bearing_check(input):
     for fastener_coord in coordinates_array:
         inplane_forces = get_inplane_forces(fasteners.fastener_count,
                                             fastener_coord.x,
-                                            fastener_coord.z,
-                                            cg[:1], cg[:2], F_x, F_z,
+                                            fastener_coord.y,
+                                            cg[0], cg[1], F_x, F_z,
                                             coordinates_array)
 
-        is_check_passed = get_stress_check(inplane_forces[:1], inplane_forces[:3], inplane_forces[:2], diameter, thickness, wall_thickness, allowable_stress, wall_allowable_stress)
+        is_check_passed = get_stress_check(inplane_forces[0], inplane_forces[2], inplane_forces[1], diameter, thickness, wall_thickness, allowable_stress, wall_allowable_stress)
         return is_check_passed
 
 
@@ -57,13 +55,19 @@ def fastener_selection(w, e1, d2, material):  # Width, Edge1, Diameter of Hole, 
     class output:
         def __init__(self):
             self.usable_length = w - 2 * e1 # determining the length where the fasteners can be
+            print("Usable plate length: " + str(self.usable_length))
             self.fastener_count = int(((self.usable_length / d2) - 1) / fastener_spacing) + 1
+            if self.fastener_count < 2:
+                quit("Fastener count is less than 2. Process terminated.")
+            print("Selected number of fasteners: " + str(self.fastener_count))
             self.spacing = (w - 2 * e1 - d2) / (self.fastener_count - 1)  # Final spacing between holes
+            print("Distance between fasteners: " + str(self.spacing))
+
 
     return output()  # number of fastener and spacing between them
 
 def get_coord_list(N, D, d, e_1):
-    if (N % 2) == 0 and N != 0:
+    if (N % 2) == 0:
         x_max = D / 2 + d
         z_max = ((N / 2 - 1) * D + (N / 2 - 1) * e_1) / 2
 
@@ -86,9 +90,13 @@ def get_coord_list(N, D, d, e_1):
             else:
                 for i in intersection.coords:
                     coords_list.append(Point(i))
+
+        for i, point in enumerate(coords_list):
+            print("Fastener " + str(i + 1) + " coordinate: " + str(point.x) + "," + str(point.y))
+
         return coords_list
     else:
-        quit("Number of fastener is not even or equal to 0. Please insert an even number.")
+        quit("Number of fastener is not even. Please insert an even number.")
 
 def get_cg(coords_list, area, N):
     sum_x = 0
@@ -99,6 +107,8 @@ def get_cg(coords_list, area, N):
 
     pos_cg_x = sum_x/ (N * area)
     pos_cg_y = sum_y/ (N * area)
+
+    print("Center of gravity position: " + str(pos_cg_x) + "," + str(pos_cg_y))
 
     return [pos_cg_x, pos_cg_y]
 
@@ -128,20 +138,17 @@ def get_inplane_forces (n, x, z, cg_x, cg_z, F_x, F_z, coo):  #Required Variable
         d = np.array([cg_z,cg_x]) # vector representing moment arm                              #     ^ x
         F = np.array([F_z,F_x]) # vector representing resultant force vector                    #     |
                                                                                                 #     |
-                                                                                                #     ._ _ _ _> z
         M = abs(np.cross(d,F))
-        #print(d)
-        #print(F)
-        print(M)
         r = m.sqrt((z-cg_z)**2+(x-cg_x)**2)
-        print(r)
         S = SumR_Squared(coo,cg_x,cg_z)
-        print(S)
         F_inplane_M = (M*r)/S    # looking at Eq 4.4 in the manual a more general version is represented, however since all cross-sectional areas will bes the same, this eqaution can be simplified by putting the area outside the summation, and thus cancelling out
 
-        #print(F_inplane_x,F_inplane_z ,F_inplane_M)
-        forces = np.array([F_inplane_x,F_inplane_z ,F_inplane_M ])
-        return forces
+    forces = np.array([F_inplane_x,F_inplane_z ,F_inplane_M])
+    print("Inplane X Force: " + str(F_inplane_x) + "N")
+    print("Inplane Z Force: " + str(F_inplane_z) + "N")
+    print("Inplane Moment Force: " + str(F_inplane_M) + "N")
+
+    return forces
 
 def getResultant(F_x, F_y, F_z):
     R = m.sqrt(pow(F_x, 2) + pow(F_z, 2) + pow(F_y, 2))
@@ -154,7 +161,7 @@ def getBearingStress(P, D, t):
 def isAllowable(sigma_allowable, sigma_bearing):
     result = sigma_allowable >= sigma_bearing
     if result:
-        print("Allowable bearing stress check passed with bearing stress of" + str(sigma_bearing) + "Pa and allowable stress of" + str(sigma_allowable) + "Pa")
+        print("Allowable bearing stress check passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
         return result
     else:
         print("Allowable bearing stress check not passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
@@ -165,17 +172,12 @@ def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma
     sigma_bearing = getBearingStress(R, D, t)
     sigma_wall_bearing = getBearingStress(R, D, t_wall)
 
+    print("Checking plate allowable stress:")
     isPlateAllowable = isAllowable(sigma_allowable, sigma_bearing)
+    print("Checking wall allowable stress:")
     isWallAllowable = isAllowable(sigma_wall_allowable, sigma_wall_bearing)
 
     return isPlateAllowable, isWallAllowable
 
 
 check = bearing_check(input)
-print(check)
-
-# with open('data.json', 'r+') as file:
-#     json_data = json.load(file)
-#
-#
-#     json.dump(array, file)
