@@ -1,4 +1,5 @@
-from math import pi, sqrt
+from math import pi, sqrt, sum
+from FILENAMEHERE import fastener_count
 
 def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
     #Variables
@@ -37,27 +38,31 @@ def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
     #Force in the y-direction on each fastener
     F_pi = F_y / n_f
 
-    #Calculating the shear stress on the fastener and the sheets.
-    for i in range(len(distances)):
+    #Calculating the shear stress on the fastener and the sheets
+    n = 0
+    for i in distances:
 
         # Forces on a fastener
-        F_pMz = (M_z * i * A_tension) / summation
+        F_pMz = (-M_z * i * A_tension) / summation
 
         # Total Force and shear stress
-        F_T = F_pi + F_pMz
-        shearstress = F_T / A_shear
+        # Total Force and shear stress
+        if (listcoordinates[n][0] > 0):
+            F_T = F_pi - F_pMz
+            shearstress = F_T / A_shear
+        else:
+            F_T = F_pi + F_pMz
+            shearstress = F_T / A_shear
+        n = n + 1
 
         difference = shearstress - shearyieldstress
         margin.append(difference)
 
     # Easy check to see if the structure will fail
-    for j in range(len(margin)):
+    for j in margin:
         if (j >= 0):
-            print('There is a fastener where failure occurs')
+            print('This fastener fails!!!!!!!!!!!!!!!!!')
         else:
             print('This configuration is fine')
 
-
     return margin       #margin is a list of the difference between shear stress and the yield stress. If the value is positive, if the margin is positive, then pull through occurs
-
-
