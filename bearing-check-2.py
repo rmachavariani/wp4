@@ -21,7 +21,7 @@ def getResultant(F_x, F_y, F_z):
 
 def getBearingStress(P, D, t):
     sigma = P / (D * t)
-    return sigma
+    return 1.5*sigma #1.5 margin of safety
 
 
 def isAllowable(sigma_allowable, sigma_bearing):
