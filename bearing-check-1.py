@@ -9,7 +9,7 @@ e_1 = 1  # Vertical Clearance
 d = 1  # horizontal distance from z to hole
 D = 1  # Hole Diameter
 A = m.pi*(D/2)**2  # Hole Area
-N = 8 # Number of holes
+N = 8  # Number of holes
 
 
 def get_coord_list(N, D, d, e_1):
