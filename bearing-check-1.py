@@ -1,29 +1,61 @@
 import math as m
+from shapely.geometry import LineString, Point, box
+
 
 # Test Data
-L = 2  # length of the backup plate
-H = 2  # height of the backup plate
-c_h = 1  # Horizontal Clearance
-c_v = 1  # Vertical Clearance
-R = 1  # Hole Radius
-A = m.pi * pow(R, 2) # Hole Area
 
-# Coordinates of a center of each fastener
-x_1 = (L / 2) - (R / 2) - c_h
-z_1 = (H / 2) - (R / 2) - c_v
-x_2 = x_1
-z_2 = -z_1
-x_3 = -x_1
-z_3 = z_1
-x_4 = -x_1
-z_4 = -z_1
+e_2 = 1  # Horizontal Clearance
+e_1 = 1  # Vertical Clearance
+d = 1  # horizontal distance from z to hole
+D = 1  # Hole Diameter
+A = m.pi*(D/2)**2  # Hole Area
+N = 8 # Number of holes
 
 
-# Calculates center of gravity
-def cg(pos_1, pos_2, pos_3, pos_4, area):
-    pos_cg = (pos_1 + pos_2 + pos_3 + pos_4) * area / (pos_1 + pos_2 + pos_3 + pos_4)
-    return pos_cg
+def get_coord_list(N, D, d, e_1):
+    if (N % 2) == 0 and N != 0:
+        x_max = D / 2 + d
+        z_max = ((N / 2 - 1) * D + (N / 2 - 1) * e_1) / 2
+
+        polygon = box(-x_max, -z_max, x_max, z_max)
+        ny = N / 2
+
+        minx, miny, maxx, maxy = polygon.bounds
+
+        dy = D + e_1
+        horizontal_splitters = [LineString([(minx, miny + i * dy), (maxx, miny + i * dy)]) for i in range(int(ny))]
+        coords_list = list()
+
+        for splitter in horizontal_splitters:
+            intersection = polygon.exterior.intersection(splitter)
+            if intersection.is_empty:
+                quit("Intersection failed. Process Terminated.")
+            elif intersection.geom_type.startswith('Multi') or intersection.geom_type == 'GeometryCollection':
+                for shp in intersection:
+                    coords_list.append(shp)
+            else:
+                for i in intersection.coords:
+                    coords_list.append(Point(i))
+        return coords_list
+    else:
+        quit("Number of fastener is not even or equal to 0. Please insert an even number.")
 
 
-cg_x = cg(x_1, x_2, x_3, x_4, A)
-cg_z = cg(z_1, z_2, z_3, z_4, A)
+coords_list = get_coord_list(N, D, d, e_1)
+
+def cg(coords_list, area):
+    sum_x = 0
+    sum_y = 0
+    for point in coords_list:
+        sum_x = sum_x + area * point.x
+        sum_y = sum_y + area * point.y
+
+    pos_cg_x = sum_x/ (N * area)
+    pos_cg_y = sum_y/ (N * area)
+    return [(pos_cg_x, pos_cg_y)]
+
+
+cg = cg(coords_list, A)
+print(cg)
+
+
