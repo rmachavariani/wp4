@@ -4,17 +4,19 @@
      "plate":
           {
             "height": "1",
-            "width": "1",
+            "width": "0.5",
             "thickness": "1",
-            "material": "1"
+            "material": "1",
+            "wall_thickness": "1",
+            "allowable_stress": "520000000",
+            "wall_allowable_stress": "520000000"
           },
     "fastener":
         {
-          "number": "8",
-          "diameter": "1",
-          "edge_horizontal": "1",
-          "edge_vertical": "1",
-          "horizontal_spacing": "1",
+          "diameter": "0.05",
+          "edge_horizontal": "0.05",
+          "edge_vertical": "0.06",
+          "horizontal_spacing": "0.06",
           "material": "1"
         }
     }
