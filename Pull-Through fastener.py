@@ -12,6 +12,9 @@ def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
     yieldstress = h             #Yield stress of the plates
     listcoordinates = i         #List of the coordinates of the fasteners
 
+    #Determining the shear yield stress
+    shearyieldstress = yieldstress/sqrt(3)
+
     #Areas
     A_shear = pi * D_fo * (t2 + t3)
     A_tension = (1/4) * pi * (D_fi**2)
@@ -44,7 +47,7 @@ def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
         F_T = F_pi + F_pMz
         shearstress = F_T / A_shear
 
-        difference = shearstress - yieldstress
+        difference = shearstress - shearyieldstress
         margin.append(difference)
 
     # Easy check to see if the structure will fail
