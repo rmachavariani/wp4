@@ -1,9 +1,8 @@
 # This is master file for bearing check
 import json
 import math as m
+import numpy as np
 from shapely.geometry import LineString, Point, box
-
-
 
 with open('data.json', 'r') as j:
     input = json.load(j)['input']
@@ -12,24 +11,40 @@ with open('data.json', 'r') as j:
 def bearing_check(input):
     plate_data = input['plate']
     fastener_data = input['fastener']
+    width = float(plate_data['width'])
+    edge_vertical = float(fastener_data['edge_vertical'])
+    print(fastener_data['diameter'])
+    diameter = float(fastener_data['diameter'])
+    material = float(plate_data['material'])
+    horizontal_spacing = float(fastener_data['horizontal_spacing'])
+    area = m.pi*(int(diameter/2)**2)
+    thickness = float(plate_data['thickness'])
+    wall_thickness = float(plate_data['wall_thickness'])
+    allowable_stress = float(plate_data['allowable_stress'])
+    wall_allowable_stress = float(plate_data['wall_allowable_stress'])
 
-    fasteners = fastener_selection(int(plate_data['width']),
-                                   int(fastener_data['edge_vertical']),
-                                   int(fastener_data['diameter']),
-                                   int(plate_data['material']))
-    coordinates_array = get_coord_list(fasteners.fastener_count,
-                                       int(fastener_data['diameter']),
-                                       int(fastener_data['horizontal_spacing']),
-                                       fasteners.spacing)
-    cg = get_cg(coordinates_array,
-                m.pi*(int(fastener_data['diameter']/2)**2),
-                fasteners.fastener_count)
+    # ??????
+    F_x = 200
+    F_z = 200
+
+    # Determing the required quantity of fasteners. Main things to determine: number of fasteners and their spacing
+    # Things to keep in mind: type of material -> Two types of materials. If metal 2-3; if composite 4-5.
+    fasteners = fastener_selection(width, edge_vertical, diameter, material)
+    coordinates_array = get_coord_list(fasteners.fastener_count, diameter, horizontal_spacing, fasteners.spacing)
+    cg = get_cg(coordinates_array, area, fasteners.fastener_count)
+
+    for fastener_coord in coordinates_array:
+        inplane_forces = get_inplane_forces(fasteners.fastener_count,
+                                            fastener_coord.x,
+                                            fastener_coord.z,
+                                            cg[:1], cg[:2], F_x, F_z,
+                                            coordinates_array)
+
+        is_check_passed = get_stress_check(inplane_forces[:1], inplane_forces[:3], inplane_forces[:2], diameter, thickness, wall_thickness, allowable_stress, wall_allowable_stress)
+        return is_check_passed
 
 
 
-#
-# Determing the required quantity of fasteners. Main things to determine: number of fasteners and their spacing
-# Things to keep in mind: type of material -> Two types of materials. If metal 2-3; if composite 4-5.
 def fastener_selection(w, e1, d2, material):  # Width, Edge1, Diameter of Hole, Material Type
     # 1 indicates metal, 2 indicates composite
     if material == 1:
@@ -84,14 +99,76 @@ def get_cg(coords_list, area, N):
 
     pos_cg_x = sum_x/ (N * area)
     pos_cg_y = sum_y/ (N * area)
-    return [(pos_cg_x, pos_cg_y)]
 
+    return [pos_cg_x, pos_cg_y]
 
+def SumR_Squared (coo,cg_x,cg_z): # is the sum of the square distances of each fastener to the c.g. of the fasteners
+    R = []
+    for i in coo:
+        r_squared = (float(i[0])-cg_x)**2+(float(i[1])-cg_z)**2
+        R.append(r_squared)
+        S = sum(R)
+    return S
 
+def get_inplane_forces (n, x, z, cg_x, cg_z, F_x, F_z, coo):  #Required Variables: number of fast., coo single fast., S: see above, coo cg(4.5), force components (4.1)
+    #check whether resultant of F_x and F_z acts through the cg of the fasteners
+    F_inplane_x = F_x / n
+    F_inplane_z = F_z / n
 
+    new_coordinates_array = []
+    for fastener_coord in coo:
+        new_coordinates_array.append([fastener_coord.x, fastener_coord.y])
 
+    coo = new_coordinates_array
 
+    if cg_x == 0 and cg_z == 0:
+        F_inplane_M = 0
 
+    else: # the following vectors are treated as if they were in a regular x-y plane , the variables are however different: x -> z, y -> x (see drawing reference system)
+        d = np.array([cg_z,cg_x]) # vector representing moment arm                              #     ^ x
+        F = np.array([F_z,F_x]) # vector representing resultant force vector                    #     |
+                                                                                                #     |
+                                                                                                #     ._ _ _ _> z
+        M = abs(np.cross(d,F))
+        #print(d)
+        #print(F)
+        print(M)
+        r = m.sqrt((z-cg_z)**2+(x-cg_x)**2)
+        print(r)
+        S = SumR_Squared(coo,cg_x,cg_z)
+        print(S)
+        F_inplane_M = (M*r)/S    # looking at Eq 4.4 in the manual a more general version is represented, however since all cross-sectional areas will bes the same, this eqaution can be simplified by putting the area outside the summation, and thus cancelling out
+
+        #print(F_inplane_x,F_inplane_z ,F_inplane_M)
+        forces = np.array([F_inplane_x,F_inplane_z ,F_inplane_M ])
+        return forces
+
+def getResultant(F_x, F_y, F_z):
+    R = m.sqrt(pow(F_x, 2) + pow(F_z, 2) + pow(F_y, 2))
+    return R
+
+def getBearingStress(P, D, t):
+    sigma = P / (D * t)
+    return 1.5*sigma #1.5 margin of safety
+
+def isAllowable(sigma_allowable, sigma_bearing):
+    result = sigma_allowable >= sigma_bearing
+    if result:
+        print("Allowable bearing stress check passed with bearing stress of" + str(sigma_bearing) + "Pa and allowable stress of" + str(sigma_allowable) + "Pa")
+        return result
+    else:
+        print("Allowable bearing stress check not passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
+        quit('Bearing stress check not passed. Process terminated. ')
+
+def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma_allowable, sigma_wall_allowable):
+    R = getResultant(F_inplane_x, F_inplane_y, F_inplane_z)
+    sigma_bearing = getBearingStress(R, D, t)
+    sigma_wall_bearing = getBearingStress(R, D, t_wall)
+
+    isPlateAllowable = isAllowable(sigma_allowable, sigma_bearing)
+    isWallAllowable = isAllowable(sigma_wall_allowable, sigma_wall_bearing)
+
+    return isPlateAllowable, isWallAllowable
 
 
 check = bearing_check(input)
