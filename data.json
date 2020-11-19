@@ -19,5 +19,15 @@
           "horizontal_spacing": "0.06",
           "material": "1"
         }
+    },
+    "output":
+    {
+      "plate": {
+
+      },
+      "fastener": {
+        "quantity": "12"
+      }
+
     }
 }
