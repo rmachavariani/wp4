@@ -50,7 +50,7 @@ def fastener_selection(w, e1, d2, material):  # Width, Edge1, Diameter of Hole, 
     elif material == 2:
         fastener_spacing = 4
     else:
-        return print("Please indicate the material type")
+        quit("Please indicate the material type")
 
     class output:
         def __init__(self):
