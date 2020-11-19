@@ -1,7 +1,7 @@
 from math import pi, sqrt, sum
 from FILENAMEHERE import fastener_count
 
-def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
+def pullthrough(fastener_count,b,c,d,e,f,g,h,i,j):
     #Variables
     n_f = fastener_count        #Number of fasteners
     D_fi = b                    #Inner diameter of the fastener
@@ -10,11 +10,13 @@ def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
     t2 = e                      #Thickness of the plate
     t3 = f                      #Thickness of the vehicle wall
     M_z = g                     #Moment of the solar panel
-    yieldstress = h             #Yield stress of the plates
-    listcoordinates = i         #List of the coordinates of the fasteners
+    yieldstress_backplate = h             #Yield stress of the plates
+    yieldstress_vehicleplate= i
+    listcoordinates = j         #List of the coordinates of the fasteners
 
     #Determining the shear yield stress
-    shearyieldstress = yieldstress/sqrt(3)
+    shearyieldstress_backplate = yieldstress_backplate/sqrt(3)
+    shearyieldstress_vehicleplate = yieldstress_vehicleplate/sqrt(3)
 
     #Areas
     A_shear = pi * D_fo * (t2 + t3)
@@ -22,7 +24,8 @@ def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
 
     #Lists
     distances = []
-    margin = []
+    margin_backplate = []
+    margin_vehicleplate = []
 
     #Distance between fastener and cg
     for radius in range(0, len(listcoordinates)):
@@ -46,7 +49,6 @@ def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
         F_pMz = (-M_z * i * A_tension) / summation
 
         # Total Force and shear stress
-        # Total Force and shear stress
         if (listcoordinates[n][0] > 0):
             F_T = F_pi - F_pMz
             shearstress = F_T / A_shear
@@ -55,14 +57,25 @@ def pullthrough(fastener_count,b,c,d,e,f,g,h,i):
             shearstress = F_T / A_shear
         n = n + 1
 
-        difference = shearstress - shearyieldstress
-        margin.append(difference)
+        difference_backplate = shearstress - shearyieldstress_backplate
+        difference_vehicleplate = shearstress - shearyieldstress_vehicleplate
+
+        margin_backplate.append(difference_backplate)
+        margin_vehicleplate.append(difference_vehicleplate)
 
     # Easy check to see if the structure will fail
-    for j in margin:
+    print('Pull Through check for the backplate')
+    for j in margin_backplate:
         if (j >= 0):
             print('This fastener fails!!!!!!!!!!!!!!!!!')
         else:
             print('This configuration is fine')
 
-    return margin       #margin is a list of the difference between shear stress and the yield stress. If the value is positive, if the margin is positive, then pull through occurs
+    print('Pull through check for the vehicleplate')
+    for k in margin_vehicleplate:
+        if (k >= 0):
+            print('This fastener fails!!!!!!!!!!!!!!!!!')
+        else:
+            print('This configuration is fine')
+
+    return margin_vehicleplate, margin_backplate       #margin is a list of the difference between shear stress and the yield stress. If the value is positive, if the margin is positive, then pull through occurs
