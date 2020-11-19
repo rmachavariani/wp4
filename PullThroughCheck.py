@@ -1,6 +1,13 @@
 from math import pi, sqrt, sum
-from FILENAMEHERE import fastener_count
 
+with open('data.json', 'r') as p:
+    input = json.load(p)
+
+def pullthrough(input):
+    plate_data = input['plate']
+    fastener_data = input['fastener']
+    quantaties = input['output']
+    fastener_quantaties =
 def pullthrough(fastener_count,b,c,d,e,f,g,h,i,j):
     #Variables
     n_f = fastener_count        #Number of fasteners
@@ -11,8 +18,9 @@ def pullthrough(fastener_count,b,c,d,e,f,g,h,i,j):
     t3 = f                      #Thickness of the vehicle wall
     M_z = g                     #Moment of the solar panel
     yieldstress_backplate = h             #Yield stress of the plates
-    yieldstress_vehicleplate= i
-    listcoordinates = j         #List of the coordinates of the fasteners
+    yieldstress_vehicleplate = i
+    listcoordinates = j
+
 
     #Determining the shear yield stress
     shearyieldstress_backplate = yieldstress_backplate/sqrt(3)
