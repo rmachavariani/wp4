@@ -156,7 +156,7 @@ def getResultant(F_x, F_y, F_z):
 
 def getBearingStress(P, D, t):
     sigma = P / (D * t)
-    return 1.5*sigma #1.5 margin of safety
+    return sigma #1.5 margin of safety removed, and to be included in WP4.13
 
 def isAllowable(sigma_allowable, sigma_bearing):
     result = sigma_allowable >= sigma_bearing
