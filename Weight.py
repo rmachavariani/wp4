@@ -1,30 +1,44 @@
 """Total Weight  Attachment"""
 import math as m
+import json
 
-def WeightFasteners (t_2,t_3,D_fo,D_fi,rho):
-    l           = t_2 + t_3                               #minimum length bolt
-    height_nut  = D_fo/2                                  #arbitrary
-    volume_nut  = (m.pi*D_fo**2)/4*height_nut
-    volume_bolt = (m.pi*D_fi**2)/4*l
-    total_volume = volume_bolt + 2*volume_nut             #volume nut counted twice as there is one on either side
 
-    weight_fastener = rho*total_volume
+def calc_weight_fasteners():
+    with open('data.json', 'r') as j:
+        json_data = json.load(j)["input"]
+
+    # Data sets
+    back_plate = json_data["back_plate"]
+    vehicle_wall = json_data["vehicle_wall"]
+    fastener = json_data["fastener"]
+
+    length = back_plate["thickness"] + vehicle_wall["thickness"]  # minimum length bolt
+    height_nut = fastener["outer_diameter"] / 2  # arbitrary
+    volume_nut = (m.pi * fastener["outer_diameter"] ** 2) / 4 * height_nut
+    volume_bolt = (m.pi * fastener["inner_diameter"] ** 2) / 4 * length
+    total_volume = volume_bolt + 2 * volume_nut  # volume nut counted twice as there is one on either side
+
+    weight_fastener = fastener["density"] * total_volume
 
     return weight_fastener
 
-def WeightAttachment (t_1,t_2,n_fasteners,n_lugs,w,l,h_lug,D_1,D_2,rho):
 
-    volume_backupplate  = t_2*w*l - n_fasteners*(m.pi*D_2**2)/4*t_2
-    volume_lug          = t_1*w*(h_lug-(w-D_1)/2-D_1/2) + t_1*(m.pi*w**2)/8 - t_1*(m.pi*D_1**2)/4
+def calc_weight_attachment():
+    with open('data.json', 'r') as j:
+        json_data = json.load(j)["input"]
 
-    total_volume        = volume_backupplate + n_lugs*volume_lug
+    # Data sets
+    back_plate = json_data["back_plate"]
+    lug = json_data["lug"]
+    fastener = json_data["fastener"]
 
-    weight_attachment   = rho*total_volume
+    volume_backup_plate = back_plate["thickness"] * back_plate["width"] * back_plate["height"]\
+                          - fastener["number"] * (m.pi * fastener["inner_diameter"] ** 2) / 4 * back_plate["thickness"]
+    volume_lug = lug["thickness"] * lug["width"] * (lug["height"] - (lug["width"] - lug["hole_diameter"]) / 2 - lug["hole_diameter"] / 2)\
+                 + lug["thickness"] * (m.pi * lug["width"] ** 2) / 8 - lug["width"] * (m.pi * lug["hole_diameter"] ** 2) / 4
+
+    total_volume = volume_backup_plate + lug["number"] * volume_lug
+
+    weight_attachment = lug["density"] * total_volume
 
     return weight_attachment
-
-
-
-
-
-

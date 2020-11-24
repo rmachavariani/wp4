@@ -14,12 +14,12 @@ def pull_through(forces, moments):
     n_f = fastener['number']  # Number of fasteners
     t2 = back_plate['thickness']  # Thickness of the plate
     t3 = vehicle_wall['thickness']  # Thickness of the vehicle wall
-    m_z = moments[3][1]  # Moment of the solar panel
     yield_stress_back_plate = back_plate['allowable_stress']  # Yield stress of the plates
     yield_stress_vehicle_plate = vehicle_wall['allowable_stress']
     list_coordinates = fastener['coord_list']
 
     f_y = forces[3][0]  # Tensile Force
+    m_z = moments[3][1]  # Moment of the solar panel
 
     # Determining the shear yield stress
     shear_yield_stress_back_plate = yield_stress_back_plate / sqrt(3)

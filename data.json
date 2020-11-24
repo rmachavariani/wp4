@@ -5,7 +5,17 @@
       "width": "0.5",
       "thickness": "1",
       "material": "1",
-      "wall_thickness": "0.2",
+      "density": "1",
+      "allowable_stress": "520000000"
+    },
+    "lug": {
+      "number": "1",
+      "height": "1",
+      "width": "0.5",
+      "thickness": "1",
+      "material": "1",
+      "density": "1",
+      "hole_diameter": "0.4",
       "allowable_stress": "520000000"
     },
     "fastener": {
@@ -16,7 +26,8 @@
       "edge_horizontal": "0.05",
       "edge_vertical": "0.06",
       "horizontal_spacing": "0.06",
-      "material": "1"
+      "material": "1",
+      "density": "1"
     },
     "vehicle_wall": {
       "thickness": "1",
