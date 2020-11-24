@@ -42,8 +42,5 @@ horizontal_spacing = float(fastener_data['horizontal_spacing'])
 area = m.pi*((diameter/2)**2)
 
 forces = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
-
-json_data['input']['forces'] = forces
-with open('data.json', 'w') as j:
-    json.dump(json_input, j)
+bearingCheck = BearingCheck.bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
 

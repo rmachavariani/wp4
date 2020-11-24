@@ -5,41 +5,16 @@ import numpy as np
 from shapely.geometry import LineString, Point, box
 
 
-def bearing_check():
-    with open('data.json', 'r') as j:
-        json_data = json.load(j)
-
-    # Data sets
-    json_input = json_data['input']
-    back_plate_data = json_input['lug']
-    vehicle_wall_data = json_input['vehicle_wall']
-    fastener_data = json_input['fastener']
-
-    width = float(back_plate_data['width_plate'])
-    edge_vertical = float(fastener_data['edge_vertical'])
-    diameter = float(fastener_data['inner_diameter'])
-    material = float(back_plate_data['material'])
-    horizontal_spacing = float(fastener_data['horizontal_spacing'])
-    area = m.pi*((diameter/2)**2)
-    thickness = float(back_plate_data['thickness'])
-    wall_thickness = float(back_plate_data['wall_thickness'])
-    allowable_stress = float(back_plate_data['allowable_stress'])
-    wall_allowable_stress = float(vehicle_wall_data['allowable_stress'])
-
+def bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces):
     # Forces
-    F_x = 200
-    F_z = 200
+    F_x = float(forces[3][0])
+    F_z = float(forces[3][2])
 
     # Determining the required quantity of fasteners. Main things to determine: number of fasteners and their spacing
     # Things to keep in mind: type of material -> Two types of materials. If metal 2-3; if composite 4-5.
     fasteners = fastener_selection(width, edge_vertical, diameter, material)
     coordinates_array = get_coord_list(fasteners.fastener_count, diameter, horizontal_spacing, fasteners.spacing)
     cg = get_cg(coordinates_array, area, fasteners.fastener_count)
-
-    # Update json file
-    json_data['input']['fastener']['coord_list'] = str(coordinates_array)
-    with open('data.json', 'w') as j:
-        json.dump(json_input, j)
 
     for fastener_coord in coordinates_array:
         inplane_forces = get_inplane_forces(fasteners.fastener_count,
