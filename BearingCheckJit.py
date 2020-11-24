@@ -1,24 +1,25 @@
-# This is master file for bearing check
-import json
 import math as m
 import numpy as np
 from shapely.geometry import LineString, Point, box
 
-with open('data.json', 'r') as j:
-    input = json.load(j)['input']
 
+def bearing_check(lug, fastener, fastener_grid, forces, moments, material):
+    """
+    Variables
+    lug: [0-w, 1-D_1, 2-D_2, 3-t_1, 4-t_2, 5-t_3]
+    fastener: [0-D_fo, 1-D_fi, 2-N]
+    fastener_grid: [0-[x1, y1], 1-[x2, y2]]
+    material: [0-YieldStress_BackPlate, 1-YieldStress_VehiclePlate]
+    """
 
-def bearing_check(input):
-    plate_data = input['plate']
-    fastener_data = input['fastener']
-    width = float(plate_data['width'])
+    width = lug[0]
+    thickness = lug[4]
+    wall_thickness = lug[5]
+    material = float(plate_data['material'])
     edge_vertical = float(fastener_data['edge_vertical'])
     diameter = float(fastener_data['diameter'])
-    material = float(plate_data['material'])
     horizontal_spacing = float(fastener_data['horizontal_spacing'])
-    area = m.pi*((diameter/2)**2)
-    thickness = float(plate_data['thickness'])
-    wall_thickness = float(plate_data['wall_thickness'])
+    area = np.pi * ((diameter / 2)**2)
     allowable_stress = float(plate_data['allowable_stress'])
     wall_allowable_stress = float(plate_data['wall_allowable_stress'])
 
