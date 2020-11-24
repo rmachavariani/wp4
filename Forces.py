@@ -5,20 +5,25 @@ def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
     forces = np.zeros((4, 4))  # X, Y, Z, R
     moments = np.zeros((4, 3))  # X, Y, Z
 
+    mass_solar_panels = float(mass_object['solar_panels'])
+    inertia_solar_panels = float(inertia['solar_panel'])
+    inertia_total = float(inertia['total'])
+    inertia_body = float(inertia['body'])
+
     # x-axis is not considered as it has no significant forces acting on it
 
     # Forces around the y-axis:
-    forces[1][0] = (mass_object['SolarPanels'] * (a_velocity[1] ** 2)) / (0.5 * array_com[0])
-    forces[1][2] = (torque[1] * (1 - inertia['Body'] / inertia['Total'] - 2 * (inertia['SolarPanelToCenter'] / inertia['Total']))) / (body[0])
+    forces[1][0] = (mass_solar_panels * (pow(float(a_velocity['y']), 2))) / (0.5 * float(array_com['x']))
+    forces[1][2] = (float(torque['y']) * (1 - inertia_body/inertia_total - 2 * (inertia_solar_panels/inertia_total))) / float(body['x'])
     forces[1][3] = np.sqrt(forces[1][0] ** 2 + forces[1][2] ** 2)
     forces[1][1] = 0.1 * forces[1][3]
 
     # Moments around the y-axis:
-    moments[1][1] = (mass_object['SolarPanels'] * (0.5 * array_com[1]) * ((0.5 * array_com[0]) + (0.5 * body[2])) * torque[1]) / inertia['Total']
+    moments[1][1] = (mass_solar_panels * (0.5 * float(array_com['y'])) * ((0.5 * float(array_com['x'])) + (0.5 * float(body['z']))) * float(torque['y'])) / inertia_total
 
     # Forces around the z-axis:
-    forces[2][0] = (mass_object['SolarPanels'] * (a_velocity[1] ** 2)) / (0.5 * array_com[0])
-    forces[2][1] = (torque[2] * (1 - inertia['Body'] / inertia['Total'] - 2 * (inertia['SolarPanelToCenter'] / inertia['Total']))) / (body[0])
+    forces[2][0] = (mass_solar_panels * (float(a_velocity['y']) ** 2)) / (0.5 * float(array_com['x']))
+    forces[2][1] = (float(torque['z']) * (1 - inertia_body / inertia_total - 2 * (inertia_solar_panels / inertia_total))) / (float(body['x']))
     forces[2][3] = np.sqrt(forces[2][0] ** 2 + forces[2][1] ** 2)
     forces[2][2] = 0.1 * forces[2][3]
 
@@ -32,7 +37,7 @@ def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
 def launch(mass_object, launch_acceleration):
     forces = np.zeros((4, 4))  # X, Y, Z, R
 
-    forces[3][1] = mass_object['SolarPanels'] * launch_acceleration
+    forces[3][1] = float(mass_object['solar_panels']) * launch_acceleration
 
     return forces
 
@@ -57,17 +62,5 @@ def calc_forces(inertia, mass_object, a_velocity, body, torque, array_com, launc
         for column in range(forces.shape[1]):
             forces[row][column] = max(rotational_forces[row][column], launch_forces[row][column])
 
-    print(rotational_forces)
-    print(launch_forces)
-    print(forces)
+    return rotational_forces, launch_forces, forces
 
-
-mass_moment_inertia = {'Body': 200.303, 'Total': 3502.037, 'SolarPanelToCenter': 1652.484}  # in kgm^2
-masses = {'SolarPanels': 2 * 49.86, 'Body': 663.978}  # in kg
-angular_velocity = np.array([1, 1, 1])
-body_size = np.array([1.6, 2.3, 1.6])
-solar_panel_com = np.array([6.8, 0, 0])
-torques = np.array([20.125, 20.125, 20.125])
-
-# Testing
-calc_forces(mass_moment_inertia, masses, angular_velocity, body_size, torques, solar_panel_com, launch_acceleration=(5 * 9.80665))

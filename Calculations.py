@@ -1,54 +1,67 @@
 import numpy as np
 import time
+import json
+import math as m
 
 import PullThroughCheck
 import BearingCheck
-import BearingCheckJit
+import Forces
 
 
 def singe_iteration(lug):
     pass
 
+with open('data.json', 'r') as j:
+    input = json.load(j)['input']
 
-# testing
-"""
-Variables
-lug: [0-w, 1-D_1, 2-D_2, 3-t_1, 4-t_2, 5-t_3]
-fastener: [0-D_fo, 1-D_fi, 2-N]
-fastener_grid: [0-[x1, y1], 1-[x2, y2]]
-material: [0-YieldStress_BackPlate, 1-YieldStress_VehiclePlate]
-"""
+spacecraft_data = input['spacecraft']
+plate_data = input['plate']
+fastener_data = input['fastener']
 
-# Test Values
-lug_test = np.array([2, 2, 2, 2, 2, 2])
-fastener_test = np.array([3, 3, 3])
-fastener_grid_test = np.array([[2, 3], [4, 5]])
+#spacecraft data
+mmoi = spacecraft_data['mmoi']
+mass = spacecraft_data['mass']
+angular_velocity = spacecraft_data['angular_velocity']
+body_size = spacecraft_data['body_size']
+solar_panel_com = spacecraft_data['solar_panel_com']
+torques = spacecraft_data['torques']
+launch_acceleration = 5 * 9.80665
 
-forces_test = np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]])
-moments_test = np.array([[50, 60, 70], [90, 100, 110], [130, 140, 150], [170, 180, 190]])
+# plate data
+width = float(plate_data['width'])
+material = float(plate_data['material'])
+thickness = float(plate_data['thickness'])
+wall_thickness = float(plate_data['wall_thickness'])
+allowable_stress = float(plate_data['allowable_stress'])
+wall_allowable_stress = float(plate_data['wall_allowable_stress'])
 
-print(forces_test)
-print(moments_test)
+# fastener data
+edge_vertical = float(fastener_data['edge_vertical'])
+diameter = float(fastener_data['diameter'])
+horizontal_spacing = float(fastener_data['horizontal_spacing'])
+area = m.pi*((diameter/2)**2)
 
-material_test = np.array([200, 300])
+forces = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
+print(forces)
 
-# Initialize PullThroughCheck
-pull_through = PullThroughCheck.pull_through(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
-pull_through_jit = PullThroughCheck.pull_through_jit(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
 
-# Test functions
-start_time = time.time()
-margin_1, margin_2 = pull_through
-print("Normal", margin_1, margin_2, f"in {time.time() - start_time} sec")
-
-start_time = time.time()
-margin_1, margin_2 = pull_through_jit
-print("Jit", margin_1, margin_2, f"in {time.time() - start_time} sec")
-
-# Initialize BearingCheck
-bearing_check_jit = BearingCheckJit.bearing_check(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
-
-# Test functions
-start_time = time.time()
-margin_1, margin_2 = bearing_check_jit
-print("Normal", margin_1, margin_2, f"in {time.time() - start_time} sec")
+# # Initialize PullThroughCheck
+# pull_through = PullThroughCheck.pull_through(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
+# pull_through_jit = PullThroughCheck.pull_through_jit(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
+#
+# # Test functions
+# start_time = time.time()
+# margin_1, margin_2 = pull_through
+# print("Normal", margin_1, margin_2, f"in {time.time() - start_time} sec")
+#
+# start_time = time.time()
+# margin_1, margin_2 = pull_through_jit
+# print("Jit", margin_1, margin_2, f"in {time.time() - start_time} sec")
+#
+# # Initialize BearingCheck
+# bearing_check_jit = BearingCheckJit.bearing_check(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
+#
+# # Test functions
+# start_time = time.time()
+# margin_1, margin_2 = bearing_check_jit
+# print("Normal", margin_1, margin_2, f"in {time.time() - start_time} sec")

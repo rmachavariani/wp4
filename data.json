@@ -1,33 +1,46 @@
 {
-  "input":
-    {
-     "plate":
-          {
-            "height": "1",
-            "width": "0.5",
-            "thickness": "1",
-            "material": "1",
-            "wall_thickness": "0.2",
-            "allowable_stress": "520000000",
-            "wall_allowable_stress": "50000000"
-          },
-    "fastener":
+  "input": {
+    "spacecraft": {
+      "mmoi":
         {
-          "diameter": "0.03",
-          "edge_horizontal": "0.05",
-          "edge_vertical": "0.06",
-          "horizontal_spacing": "0.06",
-          "material": "1"
+          "body": "203.303",
+          "total": "3502.037",
+          "solar_panel": "1652.484"
         }
+      ,
+      "mass":
+        {
+          "solar_panels": "99.72",
+          "body": "663.978"
+        }
+      ,
+      "angular_velocity": {"x":"1","y":"1","z":"1"},
+      "body_size": {"x":"1.6","y":"2.3","z":"1.6"},
+      "solar_panel_com": {"x":"6.8","y":"0","z":"0"},
+      "torques": {"x":"20.125","y":"20.125","z":"20.125"}
     },
-    "output":
-    {
-      "plate": {
-
-      },
-      "fastener": {
-        "quantity": "12"
-      }
-
+    "plate": {
+      "height": "1",
+      "width": "0.5",
+      "thickness": "1",
+      "material": "1",
+      "wall_thickness": "0.2",
+      "allowable_stress": "520000000",
+      "wall_allowable_stress": "50000000"
+    },
+    "fastener": {
+      "diameter": "0.03",
+      "edge_horizontal": "0.05",
+      "edge_vertical": "0.06",
+      "horizontal_spacing": "0.06",
+      "material": "1"
     }
+  },
+  "output": {
+    "plate": {
+    },
+    "fastener": {
+      "quantity": "12"
+    }
+  }
 }
