@@ -9,6 +9,7 @@
       "thickness_lug": "1",
       "material": "1",
       "density": "1",
+      "lug_spacing": "0.5",
       "hole_diameter": "0.4",
       "allowable_stress": "520000000"
     },
