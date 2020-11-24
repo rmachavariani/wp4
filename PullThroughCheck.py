@@ -42,6 +42,7 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
             force_t = force_pi - force_pmz
             shear_stress = force_t / a_shear
         else:
+            print(force_pi, force_pmz)
             force_t = force_pi + force_pmz
             shear_stress = force_t / a_shear
         n = n + 1

@@ -3,7 +3,7 @@ import numpy as np
 
 def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
     forces = np.zeros((4, 4))  # X, Y, Z, R
-    moments = np.zeros((4, 3))  # X, Y, Z
+    moments = np.zeros((4, 4))  # X, Y, Z
 
     mass_solar_panels = float(mass_object['solar_panels'])
     inertia_solar_panels = float(inertia['solar_panel'])
