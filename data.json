@@ -1,33 +1,32 @@
 {
-  "input":
-    {
-     "plate":
-          {
-            "height": "1",
-            "width": "0.5",
-            "thickness": "1",
-            "material": "1",
-            "wall_thickness": "0.2",
-            "allowable_stress": "520000000",
-            "wall_allowable_stress": "50000000"
-          },
-    "fastener":
-        {
-          "diameter": "0.03",
-          "edge_horizontal": "0.05",
-          "edge_vertical": "0.06",
-          "horizontal_spacing": "0.06",
-          "material": "1"
-        }
+  "input": {
+    "back_plate": {
+      "height": "1",
+      "width": "0.5",
+      "thickness": "1",
+      "material": "1",
+      "wall_thickness": "0.2",
+      "allowable_stress": "520000000"
     },
-    "output":
-    {
-      "plate": {
-
-      },
-      "fastener": {
-        "quantity": "12"
-      }
-
+    "fastener": {
+      "inner_diameter": "0.03",
+      "outer_diameter": "0.04",
+      "number": "2",
+      "coord_list": "[[2, 2], [3, 1], [1, 4], [8, 4]]",
+      "edge_horizontal": "0.05",
+      "edge_vertical": "0.06",
+      "horizontal_spacing": "0.06",
+      "material": "1"
+    },
+    "vehicle_wall": {
+      "thickness": "1",
+      "allowable_stress": "50000000"
     }
+  },
+  "output": {
+    "plate": {},
+    "fastener": {
+      "quantity": "12"
+    }
+  }
 }
