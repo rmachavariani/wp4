@@ -1,18 +1,12 @@
 {
   "input": {
-    "back_plate": {
-      "height": "1",
-      "width": "0.5",
-      "thickness": "1",
-      "material": "1",
-      "density": "1",
-      "allowable_stress": "520000000"
-    },
     "lug": {
       "number": "1",
       "height": "1",
-      "width": "0.5",
-      "thickness": "1",
+      "width_plate": "0.5",
+      "length_lug": "1",
+      "thickness_plate": "1",
+      "thickness_lug": "1",
       "material": "1",
       "density": "1",
       "hole_diameter": "0.4",
