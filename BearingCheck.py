@@ -11,11 +11,11 @@ def bearing_check():
 
     # Data sets
     json_input = json_data['input']
-    back_plate_data = json_input['back_plate']
+    back_plate_data = json_input['lug']
     vehicle_wall_data = json_input['vehicle_wall']
     fastener_data = json_input['fastener']
 
-    width = float(back_plate_data['width'])
+    width = float(back_plate_data['width_plate'])
     edge_vertical = float(fastener_data['edge_vertical'])
     diameter = float(fastener_data['inner_diameter'])
     material = float(back_plate_data['material'])
