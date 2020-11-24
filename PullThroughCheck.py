@@ -172,45 +172,9 @@ def pull_through(lug, fastener, fastener_grid, forces, moments, material):
         else:
             print('This configuration is fine')
 
-    # margin is a list of the difference between shear stress and the yield stress.
-    # If the value is positive, if the margin is positive, then pull through occurs
+    """
+    margin is a list of the difference between shear stress and the yield stress.
+    If the value is positive, if the margin is positive, then pull through occurs.
+    """
 
     return margin_vehicleplate, margin_backplate
-
-
-# testing
-"""
-Variables
-lug: [0-w, 1-D_1, 2-D_2, 3-t_1, 4-t_2, 5-t_3]
-fastener: [0-D_fo, 1-D_fi, 2-N]
-fastener_grid: [0-[x1, y1], 1-[x2, y2]]
-material: [0-YieldStress_BackPlate, 1-YieldStress_VehiclePlate]
-"""
-
-lug_test = np.array([2, 2, 2, 2, 2, 2])
-fastener_test = np.array([3, 3, 3])
-fastener_grid_test = np.array([[2, 3], [4, 5]])
-
-forces_test = np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]])
-moments_test = np.array([[50, 60, 70], [90, 100, 110], [130, 140, 150], [170, 180, 190]])
-
-print(forces_test)
-print(moments_test)
-
-material_test = np.array([200, 300])
-
-start_time = time.time()
-margin_1, margin_2 = pull_through(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
-print("Normal", margin_1, margin_2, f"in {time.time() - start_time} sec")
-
-start_time = time.time()
-margin_1, margin_2 = pull_through_jit(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
-print("First Jit", margin_1, margin_2, f"in {time.time() - start_time} sec")
-
-start_time = time.time()
-margin_1, margin_2 = pull_through_jit(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
-print("Second Jit", margin_1, margin_2, f"in {time.time() - start_time} sec")
-
-
-
-

@@ -9,8 +9,7 @@ def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
 
     # Forces around the y-axis:
     forces[1][0] = (mass_object['SolarPanels'] * (a_velocity[1] ** 2)) / (0.5 * array_com[0])
-    forces[1][2] = (torque[1] * (1 + (4 * mass_object['SolarPanels'] * (0.5 * array_com[0]) * ((0.5 * array_com[0]) + (0.5 * body[2]))
-                                      - inertia['Body'] - 2 * inertia["SolarPanelToCenter"]) / inertia['Total'])) / body[0]
+    forces[1][2] = (torque[1] * (1 - inertia['Body'] / inertia['Total'] - 2 * (inertia['SolarPanelToCenter'] / inertia['Total']))) / (body[0])
     forces[1][3] = np.sqrt(forces[1][0] ** 2 + forces[1][2] ** 2)
     forces[1][1] = 0.1 * forces[1][3]
 
