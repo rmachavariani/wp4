@@ -12,12 +12,12 @@ def singe_iteration(lug):
     pass
 
 with open('data.json', 'r') as j:
-    input = json.load(j)['input']
+    input_data = json.load(j)['input']
 
-spacecraft_data = input['spacecraft']
-plate_data = input['plate']
-fastener_data = input['fastener']
-
+spacecraft_data = input_data['spacecraft']
+lug_data = input_data['lug']
+fastener_data = input_data['fastener']
+vehicle_wall_data = input_data['vehicle_wall']
 #spacecraft data
 mmoi = spacecraft_data['mmoi']
 mass = spacecraft_data['mass']
@@ -28,19 +28,22 @@ torques = spacecraft_data['torques']
 launch_acceleration = 5 * 9.80665
 
 # plate data
-width = float(plate_data['width'])
-material = float(plate_data['material'])
-thickness = float(plate_data['thickness'])
-wall_thickness = float(plate_data['wall_thickness'])
-allowable_stress = float(plate_data['allowable_stress'])
-wall_allowable_stress = float(plate_data['wall_allowable_stress'])
+width = float(lug_data['width_plate'])
+material = float(lug_data['material'])
+thickness = float(lug_data['thickness_plate'])
+wall_thickness = float(vehicle_wall_data['thickness'])
+allowable_stress = float(lug_data['allowable_stress'])
+wall_allowable_stress = float(vehicle_wall_data['allowable_stress'])
 
 # fastener data
 edge_vertical = float(fastener_data['edge_vertical'])
-diameter = float(fastener_data['diameter'])
+diameter = float(fastener_data['outer_diameter'])
 horizontal_spacing = float(fastener_data['horizontal_spacing'])
 area = m.pi*((diameter/2)**2)
 
 forces = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
-print(forces)
+
+json_data['input']['forces'] = forces
+with open('data.json', 'w') as j:
+    json.dump(json_input, j)
 

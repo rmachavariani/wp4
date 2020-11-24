@@ -62,5 +62,5 @@ def calc_forces(inertia, mass_object, a_velocity, body, torque, array_com, launc
         for column in range(forces.shape[1]):
             forces[row][column] = max(rotational_forces[row][column], launch_forces[row][column])
 
-    return rotational_forces, launch_forces, forces
+    return forces
 

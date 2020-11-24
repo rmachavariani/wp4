@@ -196,4 +196,3 @@ def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma
     return isPlateAllowable, isWallAllowable
 
 
-check = bearing_check(json_input)
