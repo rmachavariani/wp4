@@ -44,24 +44,3 @@ area = m.pi*((diameter/2)**2)
 forces = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
 print(forces)
 
-
-# # Initialize PullThroughCheck
-# pull_through = PullThroughCheck.pull_through(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
-# pull_through_jit = PullThroughCheck.pull_through_jit(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
-#
-# # Test functions
-# start_time = time.time()
-# margin_1, margin_2 = pull_through
-# print("Normal", margin_1, margin_2, f"in {time.time() - start_time} sec")
-#
-# start_time = time.time()
-# margin_1, margin_2 = pull_through_jit
-# print("Jit", margin_1, margin_2, f"in {time.time() - start_time} sec")
-#
-# # Initialize BearingCheck
-# bearing_check_jit = BearingCheckJit.bearing_check(lug_test, fastener_test, fastener_grid_test, forces_test, moments_test, material_test)
-#
-# # Test functions
-# start_time = time.time()
-# margin_1, margin_2 = bearing_check_jit
-# print("Normal", margin_1, margin_2, f"in {time.time() - start_time} sec")
