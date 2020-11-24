@@ -1,5 +1,13 @@
 {
   "input": {
+    "spacecraft": {
+      "mmoi": {"body": "203.303", "total": "3502.037", "solar_panel": "1652.484"},
+      "mass": {"solar_panels": "99.72", "body": "663.978"},
+      "angular_velocity": {"x":"1","y":"1","z":"1"},
+      "body_size": {"x":"1.6","y":"2.3","z":"1.6"},
+      "solar_panel_com": {"x":"6.8","y":"0","z":"0"},
+      "torques": {"x":"20.125","y":"20.125","z":"20.125"}
+    },
     "lug": {
       "number": "1",
       "height": "1",
