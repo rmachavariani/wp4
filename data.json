@@ -1,40 +1,71 @@
 {
   "input": {
     "spacecraft": {
-      "mmoi": {"body": "203.303", "total": "3502.037", "solar_panel": "1652.484"},
-      "mass": {"solar_panels": "99.72", "body": "663.978"},
-      "angular_velocity": {"x":"1","y":"1","z":"1"},
-      "body_size": {"x":"1.6","y":"2.3","z":"1.6"},
-      "solar_panel_com": {"x":"6.8","y":"0","z":"0"},
-      "torques": {"x":"20.125","y":"20.125","z":"20.125"}
-    },
-    "lug": {
-      "number": "1",
-      "height": "1",
-      "width_plate": "1.4",
-      "length_lug": "1",
-      "thickness_plate": "1",
-      "thickness_lug": "1",
-      "material": "1",
-      "density": "1",
-      "lug_spacing": "0.5",
-      "hole_diameter": "0.4",
-      "allowable_stress": "520000000"
-    },
-    "fastener": {
-      "inner_diameter": "0.03",
-      "outer_diameter": "0.04",
-      "number": "2",
-      "coord_list": "[[2, 2], [3, 1], [1, 4], [8, 4]]",
-      "edge_horizontal": "0.05",
-      "edge_vertical": "0.06",
-      "horizontal_spacing": "0.06",
-      "material": "1",
-      "density": "1"
+      "torques": {
+        "y": "20.125",
+        "x": "20.125",
+        "z": "20.125"
+      },
+      "solar_panel_com": {
+        "y": "0",
+        "x": "6.8",
+        "z": "0"
+      },
+      "body_size": {
+        "y": "2.3",
+        "x": "1.6",
+        "z": "1.6"
+      },
+      "mass": {
+        "body": "663.978",
+        "solar_panels": "99.72"
+      },
+      "angular_velocity": {
+        "y": "1",
+        "x": "1",
+        "z": "1"
+      },
+      "mmoi": {
+        "body": "203.303",
+        "solar_panel": "1652.484",
+        "total": "3502.037"
+      }
     },
     "vehicle_wall": {
-      "thickness": "1",
-      "allowable_stress": "50000000"
+      "allowable_stress": "50000000",
+      "thickness": "1"
+    },
+    "fastener": {
+      "density": "1",
+      "coord_list": "[[2, 2], [3, 1], [1, 4], [8, 4]]",
+      "material": "1",
+      "number": "2",
+      "horizontal_spacing": "0.06",
+      "edge_vertical": "0.06",
+      "outer_diameter": "0.04",
+      "inner_diameter": "0.03",
+      "edge_horizontal": "0.05"
+    },
+    "lug": {
+      "length_lug": "1",
+      "thickness_plate": "1",
+      "width_plate": "1.4",
+      "density": "1",
+      "material": "1",
+      "number": "1",
+      "height": "1",
+      "lug_spacing": "0.5",
+      "thickness_lug": "1",
+      "allowable_stress": "520000000",
+      "hole_diameter": "0.4"
+    }
+  },
+  "output": {
+    "bearing_check": {
+      "margins": {
+        "wall": -49992360.00673438,
+        "plate": -519992360.0067344
+      }
     }
   }
 }

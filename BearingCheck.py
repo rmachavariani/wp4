@@ -23,8 +23,8 @@ def bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, 
                                             cg[0], cg[1], F_x, F_z,
                                             coordinates_array)
 
-        is_check_passed = get_stress_check(inplane_forces[0], inplane_forces[2], inplane_forces[1], diameter, thickness, wall_thickness, allowable_stress, wall_allowable_stress)
-        return is_check_passed, coordinates_array
+        margins = get_stress_check(inplane_forces[0], inplane_forces[2], inplane_forces[1], diameter, thickness, wall_thickness, allowable_stress, wall_allowable_stress)
+        return margins, coordinates_array
 
 
 def fastener_selection(w, e1, d2, material):  # Width, Edge1, Diameter of Hole, Material Type
@@ -150,9 +150,10 @@ def getBearingStress(P, D, t):
 
 def isAllowable(sigma_allowable, sigma_bearing):
     result = sigma_allowable >= sigma_bearing
+    margin = sigma_bearing - sigma_allowable
     if result:
         print("Allowable bearing stress check passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
-        return result
+        return margin
     else:
         print("Allowable bearing stress check not passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
         quit('Bearing stress check not passed. Process terminated. ')

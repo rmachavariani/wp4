@@ -7,17 +7,15 @@ import PullThroughCheck
 import BearingCheck
 import Forces
 
+with open('data.json', 'r+') as j:
+    json_data = json.load(j)
 
-def singe_iteration(lug):
-    pass
-
-with open('data.json', 'r') as j:
-    input_data = json.load(j)['input']
-
+input_data = json_data['input']
 spacecraft_data = input_data['spacecraft']
 lug_data = input_data['lug']
 fastener_data = input_data['fastener']
 vehicle_wall_data = input_data['vehicle_wall']
+
 #spacecraft data
 mmoi = spacecraft_data['mmoi']
 mass = spacecraft_data['mass']
@@ -43,4 +41,12 @@ area = m.pi*((diameter/2)**2)
 
 forces = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
 bearingCheck = BearingCheck.bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
+
+# Update json file
+json_data['output']['bearing_check']['margins']['plate'] = bearingCheck[0][0]
+json_data['output']['bearing_check']['margins']['wall'] = bearingCheck[0][1]
+
+with open('data.json', 'w+') as j:
+    json.dump(json_data, j)
+
 
