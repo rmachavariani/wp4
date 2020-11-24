@@ -3,31 +3,31 @@ import numpy as np
 from shapely.geometry import LineString, Point, box
 
 
-def bearing_check(lug, fastener, fastener_grid, forces, moments, material):
+def bearing_check(lug, fastener, plate_locations, forces, material):
     """
     Variables
     lug: [0-w, 1-D_1, 2-D_2, 3-t_1, 4-t_2, 5-t_3]
     fastener: [0-D_fo, 1-D_fi, 2-N]
-    fastener_grid: [0-[x1, y1], 1-[x2, y2]]
-    material: [0-YieldStress_BackPlate, 1-YieldStress_VehiclePlate]
+    fastener_grid: [0-[x1, z1], 1-[x2, z2], ...]
+    material: [0-YieldStress_BackPlate, 1-YieldStress_VehiclePlate, 2-Type(1 = Metal, 2 = Composite)]
     """
 
     width = lug[0]
     thickness = lug[4]
     wall_thickness = lug[5]
-    material = float(plate_data['material'])
+    material = material[2]
     edge_vertical = float(fastener_data['edge_vertical'])
-    diameter = float(fastener_data['diameter'])
     horizontal_spacing = float(fastener_data['horizontal_spacing'])
+    diameter = fastener[1]
     area = np.pi * ((diameter / 2)**2)
-    allowable_stress = float(plate_data['allowable_stress'])
-    wall_allowable_stress = float(plate_data['wall_allowable_stress'])
+    allowable_stress = material[0]
+    wall_allowable_stress = material[1]
 
     # Forces
-    F_x = 200
-    F_z = 200
+    F_x = forces[3][0]
+    F_z = forces[3]
 
-    # Determing the required quantity of fasteners. Main things to determine: number of fasteners and their spacing
+    # Determining the required quantity of fasteners. Main things to determine: number of fasteners and their spacing
     # Things to keep in mind: type of material -> Two types of materials. If metal 2-3; if composite 4-5.
     fasteners = fastener_selection(width, edge_vertical, diameter, material)
     coordinates_array = get_coord_list(fasteners.fastener_count, diameter, horizontal_spacing, fasteners.spacing)
