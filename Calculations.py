@@ -47,8 +47,12 @@ forces, moments = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, so
 bearingCheck, coord_array = BearingCheck.bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area,
                                                        plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
 
+new_coordinates_array = []
+for fastener_coord in coord_array:
+    new_coordinates_array.append([fastener_coord.x, fastener_coord.y])
+
 pullCheck = PullThroughCheck.pull_through(outer_diameter, inner_diameter, number, plate_thickness, wall_thickness,
-                                          allowable_stress, wall_allowable_stress, coord_array, forces, moments)
+                                          allowable_stress, wall_allowable_stress, new_coordinates_array, forces, moments)
 # Update json file
 json_data['output']['bearing_check']['margins']['plate'] = bearingCheck[0][0]
 json_data['output']['bearing_check']['margins']['wall'] = bearingCheck[0][1]
