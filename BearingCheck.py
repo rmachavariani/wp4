@@ -11,19 +11,21 @@ def bearing_check():
 
     # Data sets
     json_input = json_data['input']
-    back_plate_data = json_input['lug']
+    lug_data = json_input['lug']
     vehicle_wall_data = json_input['vehicle_wall']
     fastener_data = json_input['fastener']
 
-    width = float(back_plate_data['width_plate'])
+    width = float(lug_data['width_plate'])
+    material = float(lug_data['material'])
+    thickness = float(lug_data['thickness'])
+    wall_thickness = float(lug_data['wall_thickness'])
+    allowable_stress = float(lug_data['allowable_stress'])
+
     edge_vertical = float(fastener_data['edge_vertical'])
     diameter = float(fastener_data['inner_diameter'])
-    material = float(back_plate_data['material'])
     horizontal_spacing = float(fastener_data['horizontal_spacing'])
     area = m.pi*((diameter/2)**2)
-    thickness = float(back_plate_data['thickness'])
-    wall_thickness = float(back_plate_data['wall_thickness'])
-    allowable_stress = float(back_plate_data['allowable_stress'])
+
     wall_allowable_stress = float(vehicle_wall_data['allowable_stress'])
 
     # Forces

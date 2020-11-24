@@ -2,7 +2,7 @@ from math import pi, sqrt
 import json
 
 
-def pull_through(forces, moments):
+def pull_through():
     with open('data.json', 'r') as j:
         json_input = json.load(j)['input']
 
