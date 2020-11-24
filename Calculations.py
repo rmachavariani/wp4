@@ -16,7 +16,7 @@ lug_data = input_data['lug']
 fastener_data = input_data['fastener']
 vehicle_wall_data = input_data['vehicle_wall']
 
-#spacecraft data
+# Spacecraft data
 mmoi = spacecraft_data['mmoi']
 mass = spacecraft_data['mass']
 angular_velocity = spacecraft_data['angular_velocity']
@@ -25,23 +25,30 @@ solar_panel_com = spacecraft_data['solar_panel_com']
 torques = spacecraft_data['torques']
 launch_acceleration = 5 * 9.80665
 
-# plate data
+# Plate data
 width = float(lug_data['width_plate'])
 material = float(lug_data['material'])
-thickness = float(lug_data['thickness_plate'])
+plate_thickness = float(lug_data['thickness_plate'])
 wall_thickness = float(vehicle_wall_data['thickness'])
 allowable_stress = float(lug_data['allowable_stress'])
 wall_allowable_stress = float(vehicle_wall_data['allowable_stress'])
 
-# fastener data
+# Fastener data
+inner_diameter = float(fastener_data['inner_diameter'])
+outer_diameter = float(fastener_data['outer_diameter'])
+number = float(fastener_data['number'])
 edge_vertical = float(fastener_data['edge_vertical'])
 diameter = float(fastener_data['outer_diameter'])
 horizontal_spacing = float(fastener_data['horizontal_spacing'])
 area = m.pi*((diameter/2)**2)
 
-forces = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
-bearingCheck = BearingCheck.bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
+forces, moments = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
 
+bearingCheck, coord_array = BearingCheck.bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area,
+                                                       plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
+
+pullCheck = PullThroughCheck.pull_through(outer_diameter, inner_diameter, number, plate_thickness, wall_thickness,
+                                          allowable_stress, wall_allowable_stress, coord_array, forces, moments)
 # Update json file
 json_data['output']['bearing_check']['margins']['plate'] = bearingCheck[0][0]
 json_data['output']['bearing_check']['margins']['wall'] = bearingCheck[0][1]

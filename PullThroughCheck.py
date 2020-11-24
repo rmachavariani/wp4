@@ -2,25 +2,7 @@ from math import pi, sqrt
 import json
 
 
-def pull_through():
-    with open('data.json', 'r') as j:
-        json_input = json.load(j)['input']
-
-    fastener = json_input['fastener']
-    back_plate = json_input['back_plate']
-    vehicle_wall = json_input['vehicle_wall']
-    d_fo = fastener['outer_diameter']  # Outer diameter of the fastener
-    d_fi = fastener['inner_diameter']  # Inner diameter of the fastener
-    n_f = fastener['number']  # Number of fasteners
-    t2 = back_plate['thickness']  # Thickness of the plate
-    t3 = vehicle_wall['thickness']  # Thickness of the vehicle wall
-    yield_stress_back_plate = back_plate['allowable_stress']  # Yield stress of the plates
-    yield_stress_vehicle_plate = vehicle_wall['allowable_stress']
-    list_coordinates = fastener['coord_list']
-
-    f_y = forces[3][0]  # Tensile Force
-    m_z = moments[3][1]  # Moment of the solar panel
-
+def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_vehicle_plate, list_coordinates, f_y, m_z):
     # Determining the shear yield stress
     shear_yield_stress_back_plate = yield_stress_back_plate / sqrt(3)
     shear_yield_stress_vehicle_plate = yield_stress_vehicle_plate / sqrt(3)
