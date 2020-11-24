@@ -3,7 +3,7 @@ import numpy as np
 
 def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
     forces = np.zeros((4, 4))  # X, Y, Z, R
-    moments = np.zeros((3, 4))  # X, Y, Z, R
+    moments = np.zeros((4, 3))  # X, Y, Z
 
     # x-axis is not considered as it has no significant forces acting on it
 
@@ -25,6 +25,7 @@ def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
 
     # Total forces:
     forces[3] = np.sum(a=forces, axis=0) - forces[3]
+    moments[3] = np.sum(a=moments, axis=0) - moments[3]
 
     return forces, moments
 
