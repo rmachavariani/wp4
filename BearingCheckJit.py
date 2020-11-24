@@ -1,43 +1,37 @@
-# This is master file for bearing check
-import json
 import math as m
 import numpy as np
 from shapely.geometry import LineString, Point, box
 
 
-def bearing_check():
-    with open('data.json', 'r') as j:
-        json_data = json.load(j)
+def bearing_check(lug, fastener, plate_locations, forces, material):
+    """
+    Variables
+    lug: [0-w, 1-D_1, 2-D_2, 3-t_1, 4-t_2, 5-t_3]
+    fastener: [0-D_fo, 1-D_fi, 2-N]
+    fastener_grid: [0-[x1, z1], 1-[x2, z2], ...]
+    material: [0-YieldStress_BackPlate, 1-YieldStress_VehiclePlate, 2-Type(1 = Metal, 2 = Composite)]
+    """
 
-    json_input = json_data['input']
-    back_plate_data = json_input['back_plate']
-    vehicle_wall_data = json_input['vehicle_wall']
-    fastener_data = json_input['fastener']
-    width = float(back_plate_data['width'])
+    width = lug[0]
+    thickness = lug[4]
+    wall_thickness = lug[5]
+    material = material[2]
     edge_vertical = float(fastener_data['edge_vertical'])
-    diameter = float(fastener_data['inner_diameter'])
-    material = float(back_plate_data['material'])
     horizontal_spacing = float(fastener_data['horizontal_spacing'])
-    area = m.pi*((diameter/2)**2)
-    thickness = float(back_plate_data['thickness'])
-    wall_thickness = float(back_plate_data['wall_thickness'])
-    allowable_stress = float(back_plate_data['allowable_stress'])
-    wall_allowable_stress = float(vehicle_wall_data['allowable_stress'])
+    diameter = fastener[1]
+    area = np.pi * ((diameter / 2)**2)
+    allowable_stress = material[0]
+    wall_allowable_stress = material[1]
 
     # Forces
-    F_x = 200
-    F_z = 200
+    F_x = forces[3][0]
+    F_z = forces[3]
 
     # Determining the required quantity of fasteners. Main things to determine: number of fasteners and their spacing
     # Things to keep in mind: type of material -> Two types of materials. If metal 2-3; if composite 4-5.
     fasteners = fastener_selection(width, edge_vertical, diameter, material)
     coordinates_array = get_coord_list(fasteners.fastener_count, diameter, horizontal_spacing, fasteners.spacing)
     cg = get_cg(coordinates_array, area, fasteners.fastener_count)
-
-    # Update json file
-    json_data['input']['fastener']['coord_list'] = str(coordinates_array)
-    with open('data.json', 'w') as j:
-        json.dump(json_input, j)
 
     for fastener_coord in coordinates_array:
         inplane_forces = get_inplane_forces(fasteners.fastener_count,
@@ -47,7 +41,7 @@ def bearing_check():
                                             coordinates_array)
 
         is_check_passed = get_stress_check(inplane_forces[0], inplane_forces[2], inplane_forces[1], diameter, thickness, wall_thickness, allowable_stress, wall_allowable_stress)
-        return is_check_passed, coordinates_array
+        return is_check_passed
 
 
 def fastener_selection(w, e1, d2, material):  # Width, Edge1, Diameter of Hole, Material Type
@@ -61,7 +55,7 @@ def fastener_selection(w, e1, d2, material):  # Width, Edge1, Diameter of Hole, 
 
     class output:
         def __init__(self):
-            self.usable_length = w - 2 * e1  # determining the length where the fasteners can be
+            self.usable_length = w - 2 * e1 # determining the length where the fasteners can be
             print("Usable plate length: " + str(self.usable_length))
             self.fastener_count = int(((self.usable_length / d2) - 1) / fastener_spacing) + 1
             if self.fastener_count < 2:
@@ -194,4 +188,4 @@ def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma
     return isPlateAllowable, isWallAllowable
 
 
-check = bearing_check(json_input)
+check = bearing_check(input)
