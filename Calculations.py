@@ -92,6 +92,6 @@ for i in range(10):
         print("Error occurred, moving on to the next iteration")
         continue
 
-with open('data.json', 'w+') as j:
+with open('data_iterations.json', 'w+') as j:
     json.dump(master_json_data, j, indent=4, sort_keys=True)
 
