@@ -1,9 +1,9 @@
 # This is master file for bearing check
-import json
 import math as m
 import numpy as np
 from shapely.geometry import LineString, Point, box
 
+debug = False
 
 def bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces):
     # Forces
@@ -40,13 +40,16 @@ def fastener_selection(w, d2, material):  # Width, Edge1, Diameter of Hole, Mate
     class output:
         def __init__(self):
             self.usable_length = w - 2 * e1  # determining the length where the fasteners can be
-            print("Usable plate length: " + str(self.usable_length))
+            if debug:
+                print("Usable plate length: " + str(self.usable_length))
             self.fastener_count = int(((self.usable_length / d2) - 1) / fastener_spacing) + 1
             if self.fastener_count < 2:
                 raise ValueError("Fastener count is less than 2. Process terminated.")
-            print("Selected number of fasteners: " + str(self.fastener_count))
+            if debug:
+                print("Selected number of fasteners: " + str(self.fastener_count))
             self.spacing = (w - 2 * e1 - d2) / (self.fastener_count - 1)  # Final spacing between holes
-            print("Distance between fasteners: " + str(self.spacing))
+            if debug:
+                print("Distance between fasteners: " + str(self.spacing))
 
     return output()  # number of fastener and spacing between them
 
@@ -77,7 +80,8 @@ def get_coord_list(N, D, d, e_1):
                     coords_list.append(Point(i))
 
         for i, point in enumerate(coords_list):
-            print("Fastener " + str(i + 1) + " coordinate: " + str(point.x) + "," + str(point.y))
+            if debug:
+                print("Fastener " + str(i + 1) + " coordinate: " + str(point.x) + "," + str(point.y))
 
         return coords_list
     else:
@@ -94,7 +98,8 @@ def get_cg(coords_list, area, N):
     pos_cg_x = sum_x/ (N * area)
     pos_cg_y = sum_y/ (N * area)
 
-    print("Center of gravity position: " + str(pos_cg_x) + "," + str(pos_cg_y))
+    if debug:
+        print("Center of gravity position: " + str(pos_cg_x) + "," + str(pos_cg_y))
 
     return [pos_cg_x, pos_cg_y]
 
@@ -132,9 +137,10 @@ def get_inplane_forces (n, x, z, cg_x, cg_z, F_x, F_z, coo):  #Required Variable
         F_inplane_M = (M*r)/S    # looking at Eq 4.4 in the manual a more general version is represented, however since all cross-sectional areas will bes the same, this eqaution can be simplified by putting the area outside the summation, and thus cancelling out
 
     forces = np.array([F_inplane_x,F_inplane_z ,F_inplane_M])
-    print("Inplane X Force: " + str(F_inplane_x) + "N")
-    print("Inplane Z Force: " + str(F_inplane_z) + "N")
-    print("Inplane Moment Force: " + str(F_inplane_M) + "N")
+    if debug:
+        print("Inplane X Force: " + str(F_inplane_x) + "N")
+        print("Inplane Z Force: " + str(F_inplane_z) + "N")
+        print("Inplane Moment Force: " + str(F_inplane_M) + "N")
 
     return forces
 
@@ -153,7 +159,8 @@ def isAllowable(sigma_allowable, sigma_bearing):
     result = sigma_allowable >= sigma_bearing
     margin = sigma_bearing - sigma_allowable
     if result:
-        print("Allowable bearing stress check passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
+        if debug:
+            print("Allowable bearing stress check passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
         return margin
     else:
         print("Allowable bearing stress check not passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
@@ -165,9 +172,11 @@ def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma
     sigma_bearing = getBearingStress(R, D, t)
     sigma_wall_bearing = getBearingStress(R, D, t_wall)
 
-    print("Checking plate allowable stress:")
+    if debug:
+        print("Checking plate allowable stress:")
     isPlateAllowable = isAllowable(sigma_allowable, sigma_bearing)
-    print("Checking wall allowable stress:")
+    if debug:
+        print("Checking wall allowable stress:")
     isWallAllowable = isAllowable(sigma_wall_allowable, sigma_wall_bearing)
 
     return isPlateAllowable, isWallAllowable

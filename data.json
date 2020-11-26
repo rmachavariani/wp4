@@ -3,65 +3,65 @@
         "1": {
             "input": {
                 "fastener": {
-                    "edge_horizontal": "0.03", 
-                    "edge_vertical": "0.01", 
-                    "horizontal_spacing": "0.1", 
-                    "inner_diameter": "0.015", 
-                    "material": "1", 
+                    "edge_horizontal": "0.03",
+                    "edge_vertical": "0.01",
+                    "horizontal_spacing": "0.1",
+                    "inner_diameter": "0.015",
+                    "material": "1",
                     "outer_diameter": "0.02"
-                }, 
+                },
                 "lug": {
-                    "allowable_stress": "520000000", 
-                    "height": "0.1", 
-                    "hole_diameter": "0.02", 
-                    "length_lug": "1", 
-                    "lug_spacing": "0.5", 
-                    "material": "1", 
-                    "number": "1", 
-                    "thickness_lug": "1", 
-                    "thickness_plate": "0.05", 
+                    "allowable_stress": "520000000",
+                    "height": "0.1",
+                    "hole_diameter": "0.02",
+                    "length_lug": "1",
+                    "lug_spacing": "0.5",
+                    "material": "1",
+                    "number": "1",
+                    "thickness_lug": "1",
+                    "thickness_plate": "0.05",
                     "width_plate": ".2"
-                }, 
+                },
                 "spacecraft": {
                     "angular_velocity": {
-                        "x": "1", 
-                        "y": "1", 
+                        "x": "1",
+                        "y": "1",
                         "z": "1"
-                    }, 
+                    },
                     "body_size": {
-                        "x": "1.6", 
-                        "y": "2.3", 
+                        "x": "1.6",
+                        "y": "2.3",
                         "z": "1.6"
-                    }, 
+                    },
                     "mass": {
-                        "body": "663.978", 
+                        "body": "663.978",
                         "solar_panels": "99.72"
-                    }, 
+                    },
                     "mmoi": {
-                        "body": "203.303", 
-                        "solar_panel": "1652.484", 
+                        "body": "203.303",
+                        "solar_panel": "1652.484",
                         "total": "3502.037"
-                    }, 
+                    },
                     "solar_panel_com": {
-                        "x": "6.8", 
-                        "y": "0", 
+                        "x": "6.8",
+                        "y": "0",
                         "z": "0"
-                    }, 
+                    },
                     "torques": {
-                        "x": "20.125", 
-                        "y": "20.125", 
+                        "x": "20.125",
+                        "y": "20.125",
                         "z": "20.125"
                     }
-                }, 
+                },
                 "vehicle_wall": {
-                    "allowable_stress": "50000000", 
+                    "allowable_stress": "50000000",
                     "thickness": "0.07"
                 }
-            }, 
+            },
             "output": {
                 "bearing_check": {
                     "margins": {
-                        "plate": -519994825.8246667, 
+                        "plate": -519994825.8246667,
                         "wall": -49994825.824666664
                     }
                 }

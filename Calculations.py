@@ -6,6 +6,7 @@ import math as m
 import PullThroughCheck
 import BearingCheck
 import Forces
+import Weight
 
 with open('data.json', 'r+') as j:
     master_json_data = json.load(j)
@@ -57,13 +58,32 @@ for i in range(10):
         for fastener_coord in coord_array:
             new_coordinates_array.append([fastener_coord.x, fastener_coord.y])
 
-        pullCheck = PullThroughCheck.pull_through(outer_diameter, inner_diameter, fastener_count, plate_thickness, wall_thickness,
-                                                  allowable_stress, wall_allowable_stress, new_coordinates_array, forces, moments)
+        # Pull through check
+        margin_back_plate, margin_vehicle_plate = PullThroughCheck.pull_through(outer_diameter, inner_diameter, number, plate_thickness, wall_thickness,
+                                                                                allowable_stress, wall_allowable_stress, new_coordinates_array, forces[3][1], moments[3][2])
+
+        # Weight
+        weight_fastener = Weight.calc_weight_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density)
+        weight_attachment = Weight.calc_weight_attachment(plate_thickness, width, height, number, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density)
+
+        # Update json file
+        # Add forces
+        print(forces)
+        for force in forces[-1]:
+            print(force)
 
         # Update json file
         json_data['output']['bearing_check']['margins']['plate'] = bearingCheck[0]
         json_data['output']['bearing_check']['margins']['wall'] = bearingCheck[1]
 
+        # Add pull through check
+        for i, margin in enumerate(margin_back_plate):
+            json_data['output']['pull_check']['margins'][f'plate-{i + 1}'] = str(margin)
+
+        for i, margin in enumerate(margin_vehicle_plate):
+            json_data['output']['pull_check']['margins'][f'wall-{i + 1}'] = str(margin)
+
+        # Write back to document
         new_json_data = {}
         new_json_data[str(int(last_key) + 1)] = json_data
 
@@ -72,7 +92,6 @@ for i in range(10):
     except ValueError:
         print("Error occurred, moving on to the next iteration")
         continue
-
 
 with open('data.json', 'w+') as j:
     json.dump(master_json_data, j, indent=4, sort_keys=True)
