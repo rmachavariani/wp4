@@ -1,89 +1,101 @@
-from math import pi, sqrt, sum
+from math import pi, sqrt
 
-with open('data.json', 'r') as p:
-    input = json.load(p)
-
-def pullthrough(input):
-    plate_data = input['plate']
-    fastener_data = input['fastener']
-    quantaties = input['output']
-    fastener_quantaties =
-def pullthrough(fastener_count,b,c,d,e,f,g,h,i,j):
-    #Variables
-    n_f = fastener_count        #Number of fasteners
-    D_fi = b                    #Inner diameter of the fastener
-    D_fo = c                    #Outer diameter of the fastener
-    F_y = d                     #Tensile Force
-    t2 = e                      #Thickness of the plate
-    t3 = f                      #Thickness of the vehicle wall
-    M_z = g                     #Moment of the solar panel
-    yieldstress_backplate = h             #Yield stress of the plates
-    yieldstress_vehicleplate = i
-    listcoordinates = j
+debug = False
 
 
-    #Determining the shear yield stress
-    shearyieldstress_backplate = yieldstress_backplate/sqrt(3)
-    shearyieldstress_vehicleplate = yieldstress_vehicleplate/sqrt(3)
+def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_vehicle_plate, list_coordinates, f_y, m_z):
+    # Determining the shear yield stress
+    shear_yield_stress_back_plate = yield_stress_back_plate / sqrt(3)
+    shear_yield_stress_vehicle_plate = yield_stress_vehicle_plate / sqrt(3)
 
-    #Areas
-    A_shear = pi * D_fo * (t2 + t3)
-    A_tension = (1/4) * pi * (D_fi**2)
+    # Areas
+    a_shear = pi * d_fo * (t2 + t3)
+    a_tension = (1 / 4) * pi * (d_fi ** 2)
 
-    #Lists
-    distances = []
-    margin_backplate = []
-    margin_vehicleplate = []
+    # Lists
+    distances1 = []
+    distances2 = []
+    margin_back_plate = []
+    margin_vehicle_plate = []
 
-    #Distance between fastener and cg
-    for radius in range(0, len(listcoordinates)):
-        x_coord = listcoordinates[radius][0]
-        z_coord = listcoordinates[radius][1]
+    # Distance between fastener and cg
+    for hole in range(0, len(list_coordinates)):
+        x_coord = list_coordinates[hole][0]
+        z_coord = list_coordinates[hole][1]
 
-        pythagoras = sqrt((x_coord**2) + (z_coord**2))
-        distances.append(pythagoras)
+        pythagoras1 = sqrt((x_coord ** 2) + (z_coord ** 2))
+        pythagoras2 = (x_coord ** 2) + (z_coord ** 2)
+        distances1.append(pythagoras1)
+        distances2.append(pythagoras2)
 
-    #Summation of the area multiplied by the distance
-    summation = A_tension * sum(distances)
+    # Summation of the area multiplied by the distance
+    summation = a_tension * sum(distances2)
 
-    #Force in the y-direction on each fastener
-    F_pi = F_y / n_f
+    # Force in the y-direction on each fastener
+    force_pi = f_y / n_f
 
-    #Calculating the shear stress on the fastener and the sheets
+    # Calculating the shear stress on the fastener and the sheets
     n = 0
-    for i in distances:
+    for i in distances1:
 
         # Forces on a fastener
-        F_pMz = (-M_z * i * A_tension) / summation
+        force_pmz = (-m_z * i * a_tension) / summation
 
         # Total Force and shear stress
-        if (listcoordinates[n][0] > 0):
-            F_T = F_pi - F_pMz
-            shearstress = F_T / A_shear
+        if list_coordinates[n][0] > 0:
+            force_t = force_pi - force_pmz
+            shear_stress = force_t / a_shear
         else:
-            F_T = F_pi + F_pMz
-            shearstress = F_T / A_shear
+            force_t = force_pi + force_pmz
+            shear_stress = force_t / a_shear
+        if debug:
+            print('tau = ', shear_stress)
+
+        if shear_stress >= 0:
+            difference_back_plate = abs(shear_stress) - shear_yield_stress_back_plate
+            difference_vehicle_plate = abs(shear_stress) - shear_yield_stress_vehicle_plate
+
+        else:
+            difference_back_plate = abs(shear_stress) - shear_yield_stress_back_plate
+            difference_vehicle_plate = -shear_stress - shear_yield_stress_vehicle_plate
+
+        margin_back_plate.append(difference_back_plate)
+        margin_vehicle_plate.append(difference_vehicle_plate)
+
         n = n + 1
 
-        difference_backplate = shearstress - shearyieldstress_backplate
-        difference_vehicleplate = shearstress - shearyieldstress_vehicleplate
+    if debug:
+        # Easy check to see if the structure will fail
+        print('Pull Through check for the back plate')
+        for j in margin_back_plate:
+            if j >= 0:
+                print('This fastener fails!!!!!!!!!!!!!!!!!')
+            else:
+                print('This configuration is fine')
 
-        margin_backplate.append(difference_backplate)
-        margin_vehicleplate.append(difference_vehicleplate)
+        print('Pull through check for the vehicle plate')
+        for k in margin_vehicle_plate:
+            if k >= 0:
+                print('This fastener fails!!!!!!!!!!!!!!!!!')
+            else:
+                print('This configuration is fine')
 
-    # Easy check to see if the structure will fail
-    print('Pull Through check for the backplate')
-    for j in margin_backplate:
-        if (j >= 0):
-            print('This fastener fails!!!!!!!!!!!!!!!!!')
-        else:
-            print('This configuration is fine')
+    """
+    margin is a list of the difference between shear stress and the yield stress.
+    If the value is positive, if the margin is positive, then pull through occurs.
+    """
 
-    print('Pull through check for the vehicleplate')
-    for k in margin_vehicleplate:
-        if (k >= 0):
-            print('This fastener fails!!!!!!!!!!!!!!!!!')
-        else:
-            print('This configuration is fine')
+    return margin_back_plate, margin_vehicle_plate
 
-    return margin_vehicleplate, margin_backplate       #margin is a list of the difference between shear stress and the yield stress. If the value is positive, if the margin is positive, then pull through occurs
+#
+# # Testing:
+# def test():
+#     coord_list = [[0.05, 0.04], [0.05, -0.04], [-0.05, 0.04], [-0.05, -0.04]]
+#     test = pull_through(0.009, 0.006, 4, 0.002, 0.003, 503000000, 503000000, coord_list, 4888, 8.2)
+#     print(test)
+#
+#     # d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_vehicle_plate, list_coordinates, f_y, m_z
+#     # 4, b 0.006, c 0.009, d 5.73, e 0.002, f 0.003, g 8.12, h 3000000000, i 4000000000
+#     # 4, d_fi 0.006, d_fo 0.009, fy 5.73, t2 0.002, t3 0.003, mz 8.12, yield bp 3000000000, yield_vp 4000000000
+#
+# test()

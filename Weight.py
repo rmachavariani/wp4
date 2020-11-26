@@ -1,30 +1,26 @@
-"""Total Weight  Attachment"""
+"""Total Weight Attachment"""
 import math as m
 
-def WeightFasteners (t_2,t_3,D_fo,D_fi,rho):
-    l           = t_2 + t_3                               #minimum length bolt
-    height_nut  = D_fo/2                                  #arbitrary
-    volume_nut  = (m.pi*D_fo**2)/4*height_nut
-    volume_bolt = (m.pi*D_fi**2)/4*l
-    total_volume = volume_bolt + 2*volume_nut             #volume nut counted twice as there is one on either side
 
-    weight_fastener = rho*total_volume
+def calc_mass_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density):
+    length = plate_thickness + wall_thickness  # minimum length bolt
+    height_nut = outer_diameter / 2  # arbitrary
+    volume_nut = (m.pi * outer_diameter ** 2) / 4 * height_nut
+    volume_bolt = (m.pi * outer_diameter ** 2) / 4 * length
+    total_volume = volume_bolt + 2 * volume_nut  # volume nut counted twice as there is one on either side
+
+    weight_fastener = fastener_density * total_volume
 
     return weight_fastener
 
-def WeightAttachment (t_1,t_2,n_fasteners,n_lugs,w,l,h_lug,D_1,D_2,rho):
 
-    volume_backupplate  = t_2*w*l - n_fasteners*(m.pi*D_2**2)/4*t_2
-    volume_lug          = t_1*w*(h_lug-(w-D_1)/2-D_1/2) + t_1*(m.pi*w**2)/8 - t_1*(m.pi*D_1**2)/4
+def calc_mass_attachment(plate_thickness, width, height, number, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density):
+    volume_backup_plate = plate_thickness * width * height - number * (m.pi * inner_diameter ** 2) / 4 * plate_thickness
+    volume_lug = lug_thickness * height * (lug_length - (height - hole_diameter) / 2 - hole_diameter / 2) + lug_thickness * (m.pi * height ** 2) / 8 - height * (
+                m.pi * hole_diameter ** 2) / 4
 
-    total_volume        = volume_backupplate + n_lugs*volume_lug
+    total_volume = volume_backup_plate + number * volume_lug
 
-    weight_attachment   = rho*total_volume
+    weight_attachment = lug_density * total_volume
 
     return weight_attachment
-
-
-
-
-
-
