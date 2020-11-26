@@ -5,14 +5,14 @@ from shapely.geometry import LineString, Point, box
 
 debug = False
 
-def bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces):
+def bearing_check(height, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces):
     # Forces
     F_x = float(forces[3][0])
     F_z = float(forces[3][2])
 
     # Determining the required quantity of fasteners. Main things to determine: number of fasteners and their spacing
     # Things to keep in mind: type of material -> Two types of materials. If metal 2-3; if composite 4-5.
-    fasteners = fastener_selection(width, diameter, material)
+    fasteners = fastener_selection(height, diameter, material)
     coordinates_array = get_coord_list(fasteners.fastener_count, diameter, horizontal_spacing, fasteners.spacing)
     cg = get_cg(coordinates_array, area, fasteners.fastener_count)
 
@@ -27,7 +27,7 @@ def bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, 
         return margins, coordinates_array, fasteners.fastener_count
 
 
-def fastener_selection(w, d2, material):  # Width, Edge1, Diameter of Hole, Material Type
+def fastener_selection(h, d2, material):  # height, Edge1, Diameter of Hole, Material Type
     # 1 indicates metal, 2 indicates composite
     e1 = 1.5 * d2
     if material == 1:
@@ -39,15 +39,15 @@ def fastener_selection(w, d2, material):  # Width, Edge1, Diameter of Hole, Mate
 
     class output:
         def __init__(self):
-            self.usable_length = w - 2 * e1  # determining the length where the fasteners can be
+            self.usable_length = h - 2 * e1  # determining the length where the fasteners can be
             if debug:
                 print("Usable plate length: " + str(self.usable_length))
-            self.fastener_count = int(((self.usable_length / d2) - 1) / fastener_spacing) + 1
+            self.fastener_count = 2 * (int(((self.usable_length / d2) - 1) / fastener_spacing) + 1)
             if self.fastener_count < 2:
                 raise ValueError("Fastener count is less than 2. Process terminated.")
             if debug:
                 print("Selected number of fasteners: " + str(self.fastener_count))
-            self.spacing = (w - 2 * e1 - d2) / (self.fastener_count - 1)  # Final spacing between holes
+            self.spacing = (h - 2 * e1 - d2) / (self.fastener_count - 1)  # Final spacing between holes
             if debug:
                 print("Distance between fasteners: " + str(self.spacing))
 
