@@ -1,32 +1,116 @@
 {
   "input": {
-    "back_plate": {
-      "height": "1",
-      "width": "0.5",
-      "thickness": "1",
-      "material": "1",
-      "wall_thickness": "0.2",
-      "allowable_stress": "520000000"
-    },
-    "fastener": {
-      "inner_diameter": "0.03",
-      "outer_diameter": "0.04",
-      "number": "2",
-      "coord_list": "[[2, 2], [3, 1], [1, 4], [8, 4]]",
-      "edge_horizontal": "0.05",
-      "edge_vertical": "0.06",
-      "horizontal_spacing": "0.06",
-      "material": "1"
+    "spacecraft": {
+      "torques": {
+        "y": "20.125",
+        "x": "20.125",
+        "z": "20.125"
+      },
+      "solar_panel_com": {
+        "y": "0",
+        "x": "6.8",
+        "z": "0"
+      },
+      "body_size": {
+        "y": "2.3",
+        "x": "1.6",
+        "z": "1.6"
+      },
+      "mass": {
+        "body": "663.978",
+        "solar_panels": "99.72"
+      },
+      "angular_velocity": {
+        "y": "1",
+        "x": "1",
+        "z": "1"
+      },
+      "mmoi": {
+        "body": "203.303",
+        "solar_panel": "1652.484",
+        "total": "3502.037"
+      }
     },
     "vehicle_wall": {
-      "thickness": "1",
-      "allowable_stress": "50000000"
+      "allowable_stress": "50000000",
+      "thickness": "1"
+    },
+    "fastener": {
+      "density": "1",
+      "material": "1",
+      "number": "2",
+      "horizontal_spacing": "0.06",
+      "edge_vertical": "0.06",
+      "outer_diameter": "0.04",
+      "inner_diameter": "0.03",
+      "edge_horizontal": "0.05"
+    },
+    "lug": {
+      "thickness_plate": "1",
+      "width_plate": "1.4",
+      "number": "1",
+      "height": "1",
+      "lug_spacing": "0.5",
+      "thickness_lug": "1",
+      "length_lug": "1",
+      "hole_diameter": "0.4",
+      "allowable_stress": "520000000",
+      "density": "1",
+      "material": "1"
     }
   },
   "output": {
-    "plate": {},
-    "fastener": {
-      "quantity": "12"
+    "forces": {
+      "total_x": 0,
+      "total_y": 0,
+      "total_z": 0
+    },
+    "moments": {
+      "total_x": 0,
+      "total_y": 0,
+      "total_z": 0
+    },
+    "bearing_check": {
+      "margins": {
+        "wall": "-49992360.00673438",
+        "plate": "-519992360.0067344"
+      }
+    },
+    "pull_check": {
+      "margins": {
+        "plate-1": "-300222129.5715541",
+        "plate-2": "-300222129.5715538",
+        "plate-3": "-300222132.4262149",
+        "plate-4": "-300222132.42621464",
+        "plate-5": "-300222135.1974068",
+        "plate-6": "-300222135.19740653",
+        "plate-7": "-300222137.5764212",
+        "plate-8": "-300222137.5764209",
+        "plate-9": "-300222137.5764212",
+        "plate-10": "-300222137.5764209",
+        "plate-11": "-300222135.1974068",
+        "plate-12": "-300222135.19740653",
+        "plate-13": "-300222132.4262149",
+        "plate-14": "-300222132.42621464",
+        "plate-15": "-300222129.5715541",
+        "plate-16": "-300222129.5715538",
+        "wall-1": "-28867503.052430023",
+        "wall-2": "-28867503.05242975",
+        "wall-3": "-28867505.907090794",
+        "wall-4": "-28867505.907090522",
+        "wall-5": "-28867508.67828271",
+        "wall-6": "-28867508.67828244",
+        "wall-7": "-28867511.057297092",
+        "wall-8": "-28867511.057296816",
+        "wall-9": "-28867511.057297092",
+        "wall-10": "-28867511.057296816",
+        "wall-11": "-28867508.67828271",
+        "wall-12": "-28867508.67828244",
+        "wall-13": "-28867505.907090794",
+        "wall-14": "-28867505.907090522",
+        "wall-15": "-28867503.052430023",
+        "wall-16": "-28867503.05242975"
+      }
     }
   }
 }
