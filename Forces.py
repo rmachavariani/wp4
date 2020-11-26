@@ -12,7 +12,6 @@ def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
     inertia_total = inertia['total']
     inertia_body = inertia['body']
 
-    print((float(inertia_total['x'])))
     v_max_x = float(torque['x']) / (float(inertia_total['x']) * 20 * (float(array_com['x']) + float(body['x'])))
     v_max_z = float(torque['z']) / (float(inertia_total['z']) * 20 * (float(array_com['x']) + float(body['x'])))
 
@@ -74,6 +73,5 @@ def calc_forces(inertia, mass_object, a_velocity, body, torque, array_com, launc
             forces[row][column] = max(rotational_forces[row][column], launch_forces[row][column])
 
     moments = rotational_moments
-    print(moments)
 
     return forces, moments
