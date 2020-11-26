@@ -29,7 +29,9 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
         distances2.append(pythagoras2)
 
     # Summation of the area multiplied by the distance
+    print(a_tension, sum(distances2))
     summation = a_tension * sum(distances2)
+    print(summation)
 
     # Force in the y-direction on each fastener
     force_pi = f_y / n_f
