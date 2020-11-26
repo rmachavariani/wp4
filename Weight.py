@@ -2,7 +2,7 @@
 import math as m
 
 
-def calc_weight_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density):
+def calc_mass_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density):
     length = plate_thickness + wall_thickness  # minimum length bolt
     height_nut = outer_diameter / 2  # arbitrary
     volume_nut = (m.pi * outer_diameter ** 2) / 4 * height_nut
@@ -14,7 +14,7 @@ def calc_weight_fasteners(plate_thickness, wall_thickness, outer_diameter, faste
     return weight_fastener
 
 
-def calc_weight_attachment(plate_thickness, width, height, number, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density):
+def calc_mass_attachment(plate_thickness, width, height, number, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density):
     volume_backup_plate = plate_thickness * width * height - number * (m.pi * inner_diameter ** 2) / 4 * plate_thickness
     volume_lug = lug_thickness * height * (lug_length - (height - hole_diameter) / 2 - hole_diameter / 2) + lug_thickness * (m.pi * height ** 2) / 8 - height * (
                 m.pi * hole_diameter ** 2) / 4

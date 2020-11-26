@@ -3,7 +3,7 @@ import numpy as np
 debug = False
 
 
-def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
+def rotational(inertia, mass_object, body, torque, array_com):
     forces = np.zeros((4, 4))  # X, Y, Z, R
     moments = np.zeros((4, 4))  # X, Y, Z
 
@@ -12,7 +12,6 @@ def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
     inertia_total = inertia['total']
     inertia_body = inertia['body']
 
-    print((float(inertia_total['x'])))
     v_max_x = float(torque['x']) / (float(inertia_total['x']) * 20 * (float(array_com['x']) + float(body['x'])))
     v_max_z = float(torque['z']) / (float(inertia_total['z']) * 20 * (float(array_com['x']) + float(body['x'])))
 
@@ -66,7 +65,7 @@ def calc_forces(inertia, mass_object, a_velocity, body, torque, array_com, launc
     total   |   |   |   |           |  
     """
 
-    rotational_forces, rotational_moments = rotational(inertia, mass_object, a_velocity, body, array_com, torque)
+    rotational_forces, rotational_moments = rotational(inertia, mass_object, body, array_com, torque)
     launch_forces = launch(mass_object, launch_acceleration)
 
     for row in range(forces.shape[0]):

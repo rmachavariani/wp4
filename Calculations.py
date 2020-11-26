@@ -58,7 +58,7 @@ for i in range(10):
         forces, moments = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
 
         bearingCheck, coord_array, fastener_count = BearingCheck.bearing_check(height, outer_diameter, material, horizontal_spacing, area,
-                                                               plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
+                                                                               plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
 
         new_coordinates_array = []
         for fastener_coord in coord_array:
@@ -69,8 +69,8 @@ for i in range(10):
                                                                                 allowable_stress, wall_allowable_stress, new_coordinates_array, forces[3][1], moments[3][2])
 
         # Weight
-        weight_fastener = Weight.calc_weight_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density)
-        weight_attachment = Weight.calc_weight_attachment(plate_thickness, width, height, fastener_count, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density)
+        mass_fastener = Weight.calc_mass_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density)
+        mass_attachment = Weight.calc_mass_attachment(plate_thickness, width, height, fastener_count, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density)
 
         # Update json file
         json_data['output']['bearing_check']['margins']['plate'] = bearingCheck[0]
