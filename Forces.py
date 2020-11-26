@@ -8,28 +8,28 @@ def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
     moments = np.zeros((4, 4))  # X, Y, Z
 
     mass_solar_panels = float(mass_object['solar_panels'])
-    inertia_solar_panels = float(inertia['solar_panel'])
-    inertia_total = float(inertia['total'])
-    inertia_body = float(inertia['body'])
+    inertia_solar_panels = inertia['solar_panel']
+    inertia_total = inertia['total']
+    inertia_body = inertia['body']
 
-    v_max_x = float(torque['x']) / (inertia_total * 20 * (float(array_com['x']) + float(body['x'])))
-    v_max_z = float(torque['z']) / (inertia_total * 20 * (float(array_com['x']) + float(body['x'])))
+    v_max_x = float(torque['x']) / (float(inertia_total['x']) * 20 * (float(array_com['x']) + float(body['x'])))
+    v_max_z = float(torque['z']) / (float(inertia_total['z']) * 20 * (float(array_com['x']) + float(body['x'])))
 
     # Forces around the x-axis:
-    forces[0][1] = (mass_solar_panels * (pow(v_max_x, 2))) / (0.5 * float(array_com['x']))
-    forces[0][2] = (float(torque['x']) * (1 - inertia_body / inertia_total - 2 * (inertia_solar_panels / inertia_total))) / (float(body['x']))
+    forces[0][1] = (mass_solar_panels * (pow(v_max_x, 2))) / (float(array_com['x']))
+    forces[0][2] = (float(torque['x']) * (1 - float(inertia_body['x']) / float(inertia_total['x']) - 2 * (float(inertia_solar_panels['x']) / float(inertia_total['x'])))) / (float(body['x']))
     forces[0][3] = np.sqrt(forces[0][1] ** 2 + forces[0][2] ** 2)
     forces[0][0] = 0.1 * forces[0][3]
     # y-axis is not considered as it has no significant forces acting on it
 
     # Forces around the z-axis:
-    forces[2][1] = (mass_solar_panels * (pow(v_max_z, 2))) / (0.5 * float(array_com['x']))
-    forces[2][0] = (float(torque['z']) * (1 - inertia_body/inertia_total - 2 * (inertia_solar_panels/inertia_total))) / float(body['x'])
+    forces[2][1] = (mass_solar_panels * (pow(v_max_z, 2))) / (float(array_com['x']))
+    forces[2][0] = (float(torque['z']) * (1 - float(inertia_body['z']) / float(inertia_total['z']) - 2 * (float(inertia_solar_panels['z']) / float(inertia_total['z'])))) / float(body['x'])
     forces[2][3] = np.sqrt(forces[2][1] ** 2 + forces[2][0] ** 2)
     forces[2][2] = 0.1 * forces[2][3]
 
     # Moments around the z-axis:
-    moments[2][2] = (mass_solar_panels * (0.5 * float(array_com['x'])) * ((0.5 * float(array_com['x'])) + (0.5 * float(body['z']))) * float(torque['y'])) / inertia_total
+    moments[2][2] = (mass_solar_panels * (float(array_com['x'])) * (float(array_com['x'])) * float(torque['z'])) / float(inertia_total['z'])
 
     # Total forces:
     forces[3] = np.sum(a=forces, axis=0) - forces[3]
