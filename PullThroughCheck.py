@@ -1,5 +1,6 @@
 from math import pi, sqrt
-import json
+
+debug = False
 
 
 def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_vehicle_plate, list_coordinates, f_y, m_z):
@@ -42,7 +43,6 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
             force_t = force_pi - force_pmz
             shear_stress = force_t / a_shear
         else:
-            print(force_pi, force_pmz)
             force_t = force_pi + force_pmz
             shear_stress = force_t / a_shear
         n = n + 1
@@ -53,24 +53,25 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
         margin_back_plate.append(difference_back_plate)
         margin_vehicle_plate.append(difference_vehicle_plate)
 
-    # Easy check to see if the structure will fail
-    # print('Pull Through check for the back plate')
-    # for j in margin_back_plate:
-    #     if j >= 0:
-    #         print('This fastener fails!!!!!!!!!!!!!!!!!')
-    #     else:
-    #         print('This configuration is fine')
-    #
-    # print('Pull through check for the vehicle plate')
-    # for k in margin_vehicle_plate:
-    #     if k >= 0:
-    #         print('This fastener fails!!!!!!!!!!!!!!!!!')
-    #     else:
-    #         print('This configuration is fine')
+    if debug:
+        # Easy check to see if the structure will fail
+        print('Pull Through check for the back plate')
+        for j in margin_back_plate:
+            if j >= 0:
+                print('This fastener fails!!!!!!!!!!!!!!!!!')
+            else:
+                print('This configuration is fine')
+
+        print('Pull through check for the vehicle plate')
+        for k in margin_vehicle_plate:
+            if k >= 0:
+                print('This fastener fails!!!!!!!!!!!!!!!!!')
+            else:
+                print('This configuration is fine')
 
     """
     margin is a list of the difference between shear stress and the yield stress.
     If the value is positive, if the margin is positive, then pull through occurs.
     """
 
-    return margin_vehicle_plate, margin_back_plate
+    return margin_back_plate, margin_vehicle_plate
