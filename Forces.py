@@ -1,6 +1,6 @@
 import numpy as np
 
-debug = True
+debug = False
 
 
 def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
@@ -12,16 +12,19 @@ def rotational(inertia, mass_object, a_velocity, body, torque, array_com):
     inertia_total = float(inertia['total'])
     inertia_body = float(inertia['body'])
 
+    v_max_x = float(torque['x']) / (inertia_total * 20 * (float(array_com['x']) + float(body['x'])))
+    v_max_z = float(torque['z']) / (inertia_total * 20 * (float(array_com['x']) + float(body['x'])))
+
     # Forces around the x-axis:
-    forces[0][1] = (mass_solar_panels * (float(a_velocity['y']) ** 2)) / (0.5 * float(array_com['x']))
-    forces[0][2] = (float(torque['z']) * (1 - inertia_body / inertia_total - 2 * (inertia_solar_panels / inertia_total))) / (float(body['x']))
+    forces[0][1] = (mass_solar_panels * (pow(v_max_x, 2))) / (0.5 * float(array_com['x']))
+    forces[0][2] = (float(torque['x']) * (1 - inertia_body / inertia_total - 2 * (inertia_solar_panels / inertia_total))) / (float(body['x']))
     forces[0][3] = np.sqrt(forces[0][1] ** 2 + forces[0][2] ** 2)
     forces[0][0] = 0.1 * forces[0][3]
     # y-axis is not considered as it has no significant forces acting on it
 
     # Forces around the z-axis:
-    forces[2][1] = (mass_solar_panels * (pow(float(a_velocity['y']), 2))) / (0.5 * float(array_com['x']))
-    forces[2][0] = (float(torque['y']) * (1 - inertia_body/inertia_total - 2 * (inertia_solar_panels/inertia_total))) / float(body['x'])
+    forces[2][1] = (mass_solar_panels * (pow(v_max_z, 2))) / (0.5 * float(array_com['x']))
+    forces[2][0] = (float(torque['z']) * (1 - inertia_body/inertia_total - 2 * (inertia_solar_panels/inertia_total))) / float(body['x'])
     forces[2][3] = np.sqrt(forces[2][1] ** 2 + forces[2][0] ** 2)
     forces[2][2] = 0.1 * forces[2][3]
 
@@ -70,5 +73,6 @@ def calc_forces(inertia, mass_object, a_velocity, body, torque, array_com, launc
             forces[row][column] = max(rotational_forces[row][column], launch_forces[row][column])
 
     moments = rotational_moments
+    print(moments)
 
     return forces, moments

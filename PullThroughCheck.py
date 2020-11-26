@@ -13,7 +13,8 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
     a_tension = (1 / 4) * pi * (d_fi ** 2)
 
     # Lists
-    distances = []
+    distances1 = []
+    distances2 = []
     margin_back_plate = []
     margin_vehicle_plate = []
 
@@ -22,18 +23,20 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
         x_coord = list_coordinates[hole][0]
         z_coord = list_coordinates[hole][1]
 
-        pythagoras = sqrt((x_coord ** 2) + (z_coord ** 2))
-        distances.append(pythagoras)
+        pythagoras1 = sqrt((x_coord ** 2) + (z_coord ** 2))
+        pythagoras2 = (x_coord ** 2) + (z_coord ** 2)
+        distances1.append(pythagoras1)
+        distances2.append(pythagoras2)
 
     # Summation of the area multiplied by the distance
-    summation = a_tension * sum(distances)
+    summation = a_tension * sum(distances2)
 
     # Force in the y-direction on each fastener
     force_pi = f_y / n_f
 
     # Calculating the shear stress on the fastener and the sheets
     n = 0
-    for i in distances:
+    for i in distances1:
 
         # Forces on a fastener
         force_pmz = (-m_z * i * a_tension) / summation
@@ -45,13 +48,21 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
         else:
             force_t = force_pi + force_pmz
             shear_stress = force_t / a_shear
-        n = n + 1
+        if debug:
+            print('tau = ', shear_stress)
 
-        difference_back_plate = shear_stress - shear_yield_stress_back_plate
-        difference_vehicle_plate = shear_stress - shear_yield_stress_vehicle_plate
+        if shear_stress >= 0:
+            difference_back_plate = abs(shear_stress) - shear_yield_stress_back_plate
+            difference_vehicle_plate = abs(shear_stress) - shear_yield_stress_vehicle_plate
+
+        else:
+            difference_back_plate = abs(shear_stress) - shear_yield_stress_back_plate
+            difference_vehicle_plate = -shear_stress - shear_yield_stress_vehicle_plate
 
         margin_back_plate.append(difference_back_plate)
         margin_vehicle_plate.append(difference_vehicle_plate)
+
+        n = n + 1
 
     if debug:
         # Easy check to see if the structure will fail
@@ -75,3 +86,16 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
     """
 
     return margin_back_plate, margin_vehicle_plate
+
+
+# Testing:
+def test():
+    coord_list = [[0.05, 0.04], [0.05, -0.04], [-0.05, 0.04], [-0.05, -0.04]]
+    test = pull_through(0.009, 0.006, 4, 0.002, 0.003, 503000000, 503000000, coord_list, 4888, 8.2)
+    print(test)
+
+    # d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_vehicle_plate, list_coordinates, f_y, m_z
+    # 4, b 0.006, c 0.009, d 5.73, e 0.002, f 0.003, g 8.12, h 3000000000, i 4000000000
+    # 4, d_fi 0.006, d_fo 0.009, fy 5.73, t2 0.002, t3 0.003, mz 8.12, yield bp 3000000000, yield_vp 4000000000
+
+test()
