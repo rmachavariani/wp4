@@ -28,7 +28,6 @@ for i in range(10):
         # Spacecraft data
         mmoi = spacecraft_data['mmoi']
         mass = spacecraft_data['mass']
-        angular_velocity = spacecraft_data['angular_velocity']
         body_size = spacecraft_data['body_size']
         solar_panel_com = spacecraft_data['solar_panel_com']
         torques = spacecraft_data['torques']
@@ -55,7 +54,7 @@ for i in range(10):
         fastener_density = float(fastener_data['density'])
         area = m.pi*((outer_diameter/2)**2)
 
-        forces, moments = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
+        forces, moments = Forces.calc_forces(mmoi, mass, body_size, solar_panel_com, torques, launch_acceleration)
 
         bearingCheck, coord_array, fastener_count = BearingCheck.bearing_check(height, outer_diameter, material, horizontal_spacing, area,
                                                                                plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
