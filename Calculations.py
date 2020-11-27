@@ -87,6 +87,7 @@ for i in range(10):
         new_json_data[str(int(last_key) + 1)] = json_data
 
         master_json_data['iterations'].update(new_json_data)
+
     except ValueError:
         print("Error occurred, moving on to the next iteration")
         continue
