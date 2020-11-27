@@ -82,15 +82,15 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
 
     return margin_back_plate, margin_vehicle_plate
 
-
-# Testing:
-def test():
-    coord_list = [[0.05, 0.04], [0.05, -0.04], [-0.05, 0.04], [-0.05, -0.04]]
-    test = pull_through(0.009, 0.006, 4, 0.002, 0.003, 503000000, 503000000, coord_list, 4888, 8.2)
-    print(test)
-
-    # d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_vehicle_plate, list_coordinates, f_y, m_z
-    # 4, b 0.006, c 0.009, d 5.73, e 0.002, f 0.003, g 8.12, h 3000000000, i 4000000000
-    # 4, d_fi 0.006, d_fo 0.009, fy 5.73, t2 0.002, t3 0.003, mz 8.12, yield bp 3000000000, yield_vp 4000000000
-
-test()
+#
+# # Testing:
+# def test():
+#     coord_list = [[0.05, 0.04], [0.05, -0.04], [-0.05, 0.04], [-0.05, -0.04]]
+#     test = pull_through(0.009, 0.006, 4, 0.002, 0.003, 503000000, 503000000, coord_list, 4888, 8.2)
+#     print(test)
+#
+#     # d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_vehicle_plate, list_coordinates, f_y, m_z
+#     # 4, b 0.006, c 0.009, d 5.73, e 0.002, f 0.003, g 8.12, h 3000000000, i 4000000000
+#     # 4, d_fi 0.006, d_fo 0.009, fy 5.73, t2 0.002, t3 0.003, mz 8.12, yield bp 3000000000, yield_vp 4000000000
+#
+# test()

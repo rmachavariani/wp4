@@ -9,83 +9,96 @@ import Forces
 import Weight
 
 with open('data.json', 'r+') as j:
-    json_data = json.load(j)
+    master_json_data = json.load(j)
 
-input_data = json_data['input']
-spacecraft_data = input_data['spacecraft']
-lug_data = input_data['lug']
-fastener_data = input_data['fastener']
-vehicle_wall_data = input_data['vehicle_wall']
+for i in range(10):
+    try:
+        json_data = master_json_data['iterations']
 
-# Spacecraft data
-mmoi = spacecraft_data['mmoi']
-mass = spacecraft_data['mass']
-angular_velocity = spacecraft_data['angular_velocity']
-body_size = spacecraft_data['body_size']
-solar_panel_com = spacecraft_data['solar_panel_com']
-torques = spacecraft_data['torques']
-launch_acceleration = 5 * 9.80665
+        int_list = list(map(int, json_data.keys()))
+        last_key = sorted(int_list)[-1]
+        json_data = json_data[str(last_key)]
 
-# Lug data
-width = float(lug_data['width_plate'])
-height = float(lug_data['height'])
-material = float(lug_data['material'])
-plate_thickness = float(lug_data['thickness_plate'])
-wall_thickness = float(vehicle_wall_data['thickness'])
-lug_thickness = float(lug_data['thickness_lug'])
-lug_length = float(lug_data['length_lug'])
-hole_diameter = float(lug_data['hole_diameter'])
-lug_density = float(lug_data['density'])
-allowable_stress = float(lug_data['allowable_stress'])
-wall_allowable_stress = float(vehicle_wall_data['allowable_stress'])
+        input_data = json_data['input']
+        spacecraft_data = input_data['spacecraft']
+        lug_data = input_data['lug']
+        fastener_data = input_data['fastener']
+        vehicle_wall_data = input_data['vehicle_wall']
 
-# Fastener data
-inner_diameter = float(fastener_data['inner_diameter'])
-outer_diameter = float(fastener_data['outer_diameter'])
-number = float(fastener_data['number'])
-edge_vertical = float(fastener_data['edge_vertical'])
-diameter = float(fastener_data['outer_diameter'])
-horizontal_spacing = float(fastener_data['horizontal_spacing'])
-fastener_density = float(fastener_data['density'])
-area = m.pi * ((diameter / 2) ** 2)
+        # Spacecraft data
+        mmoi = spacecraft_data['mmoi']
+        mass = spacecraft_data['mass']
+        body_size = spacecraft_data['body_size']
+        solar_panel_com = spacecraft_data['solar_panel_com']
+        torques = spacecraft_data['torques']
+        launch_acceleration = 5 * 9.80665
 
-# Get forces
-forces, moments = Forces.calc_forces(mmoi, mass, angular_velocity, body_size, solar_panel_com, torques, launch_acceleration)
+        # Plate data
+        width = float(lug_data['width_plate']) + 0.01
+        height = float(lug_data['height']) + 0.01
+        material = float(lug_data['material'])
+        plate_thickness = float(lug_data['thickness_plate']) + 0.01
+        wall_thickness = float(vehicle_wall_data['thickness'])
+        allowable_stress = float(lug_data['allowable_stress'])
+        wall_allowable_stress = float(vehicle_wall_data['allowable_stress'])
+        lug_thickness = float(lug_data['thickness_lug'])
+        lug_length = float(lug_data['length_lug'])
+        lug_density = float(lug_data['density'])
+        hole_diameter = float(lug_data['hole_diameter'])
 
-# Checks
-# Bearing checks
-bearingCheck, coord_array = BearingCheck.bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area,
-                                                       plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
+        # Fastener data
+        inner_diameter = float(fastener_data['inner_diameter']) + 0.002
+        outer_diameter = float(fastener_data['outer_diameter']) + 0.002
+        edge_vertical = float(fastener_data['edge_vertical']) + 0.003
+        horizontal_spacing = float(fastener_data['horizontal_spacing']) + 0.01
+        fastener_density = float(fastener_data['density'])
+        area = m.pi*((outer_diameter/2)**2)
 
-new_coordinates_array = []
-for fastener_coord in coord_array:
-    new_coordinates_array.append([fastener_coord.x, fastener_coord.y])
+        forces, moments = Forces.calc_forces(mmoi, mass, body_size, solar_panel_com, torques, launch_acceleration)
+        json_data['input']['lug']['width_plate'] = width
+        json_data['input']['lug']['height'] = height
+        json_data['input']['lug']['thickness_plate'] = plate_thickness
+        json_data['input']['fastener']['inner_diameter'] = inner_diameter
+        json_data['input']['fastener']['outer_diameter'] = outer_diameter
+        json_data['input']['fastener']['edge_vertical'] = edge_vertical
+        json_data['input']['fastener']['horizontal_spacing'] = horizontal_spacing
 
-# Pull through check
-margin_back_plate, margin_vehicle_plate = PullThroughCheck.pull_through(outer_diameter, inner_diameter, number, plate_thickness, wall_thickness,
-                                                                        allowable_stress, wall_allowable_stress, new_coordinates_array, forces[3][1], moments[3][2])
+        bearingCheck, coord_array, fastener_count = BearingCheck.bearing_check(height, outer_diameter, material, horizontal_spacing, area,
+                                                                               plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
 
-# Weight
-weight_fastener = Weight.calc_weight_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density)
-weight_attachment = Weight.calc_weight_attachment(plate_thickness, width, height, number, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density)
+        new_coordinates_array = []
+        for fastener_coord in coord_array:
+            new_coordinates_array.append([fastener_coord.x, fastener_coord.y])
 
-# Update json file
-# Add forces
-print(forces)
-for force in forces[-1]:
-    print(force)
+        # Pull through check
+        margin_back_plate, margin_vehicle_plate = PullThroughCheck.pull_through(outer_diameter, inner_diameter, fastener_count, plate_thickness, wall_thickness,
+                                                                                allowable_stress, wall_allowable_stress, new_coordinates_array, forces[3][1], moments[3][2])
 
-# Add bearing check
-json_data['output']['bearing_check']['margins']['plate'] = str(bearingCheck[0])
-json_data['output']['bearing_check']['margins']['wall'] = str(bearingCheck[1])
+        # Weight
+        mass_fastener = Weight.calc_mass_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density)
+        mass_attachment = Weight.calc_mass_attachment(plate_thickness, width, height, fastener_count, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density)
 
-# Add pull through check
-for i, margin in enumerate(margin_back_plate):
-    json_data['output']['pull_check']['margins'][f'plate-{i + 1}'] = str(margin)
+        # Update json file
+        json_data['output']['bearing_check']['margins']['plate'] = bearingCheck[0]
+        json_data['output']['bearing_check']['margins']['wall'] = bearingCheck[1]
 
-for i, margin in enumerate(margin_vehicle_plate):
-    json_data['output']['pull_check']['margins'][f'wall-{i + 1}'] = str(margin)
+        # Add pull through check
+        for n, margin in enumerate(margin_back_plate):
+            json_data['output']['pull_check']['margins']["plate-{}".format(n + 1)] = str(margin)
 
-# Write back to document
-with open('data.json', 'w+') as j:
-    json.dump(json_data, j)
+        for n, margin in enumerate(margin_vehicle_plate):
+            json_data['output']['pull_check']['margins']["wall-{}".format(n + 1)] = str(margin)
+
+        # Write back to document
+        new_json_data = {}
+        new_json_data[str(int(last_key) + 1)] = json_data
+
+        master_json_data['iterations'].update(new_json_data)
+
+    except ValueError:
+        print("Error occurred, moving on to the next iteration")
+        continue
+
+with open('data_iterations.json', 'w+') as j:
+    json.dump(master_json_data, j, indent=4, sort_keys=True)
+

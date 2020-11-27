@@ -5,14 +5,14 @@ from shapely.geometry import LineString, Point, box
 
 debug = False
 
-def bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces):
+def bearing_check(height, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces):
     # Forces
     F_x = float(forces[3][0])
     F_z = float(forces[3][2])
 
     # Determining the required quantity of fasteners. Main things to determine: number of fasteners and their spacing
     # Things to keep in mind: type of material -> Two types of materials. If metal 2-3; if composite 4-5.
-    fasteners = fastener_selection(width, edge_vertical, diameter, material)
+    fasteners = fastener_selection(height, diameter, material)
     coordinates_array = get_coord_list(fasteners.fastener_count, diameter, horizontal_spacing, fasteners.spacing)
     cg = get_cg(coordinates_array, area, fasteners.fastener_count)
 
@@ -24,29 +24,30 @@ def bearing_check(width, edge_vertical, diameter, material, horizontal_spacing, 
                                             coordinates_array)
 
         margins = get_stress_check(inplane_forces[0], inplane_forces[2], inplane_forces[1], diameter, thickness, wall_thickness, allowable_stress, wall_allowable_stress)
-        return margins, coordinates_array
+        return margins, coordinates_array, fasteners.fastener_count
 
 
-def fastener_selection(w, e1, d2, material):  # Width, Edge1, Diameter of Hole, Material Type
+def fastener_selection(h, d2, material):  # height, Edge1, Diameter of Hole, Material Type
     # 1 indicates metal, 2 indicates composite
+    e1 = 1.5 * d2
     if material == 1:
         fastener_spacing = 2
     elif material == 2:
         fastener_spacing = 4
     else:
-        quit("Please indicate the material type")
+        raise ValueError("Please indicate the material type")
 
     class output:
         def __init__(self):
-            self.usable_length = w - 2 * e1  # determining the length where the fasteners can be
+            self.usable_length = h - 2 * e1  # determining the length where the fasteners can be
             if debug:
                 print("Usable plate length: " + str(self.usable_length))
-            self.fastener_count = int(((self.usable_length / d2) - 1) / fastener_spacing) + 1
+            self.fastener_count = 2 * (int(((self.usable_length / d2) - 1) / fastener_spacing) + 1)
             if self.fastener_count < 2:
-                quit("Fastener count is less than 2. Process terminated.")
+                raise ValueError("Fastener count is less than 2. Process terminated.")
             if debug:
                 print("Selected number of fasteners: " + str(self.fastener_count))
-            self.spacing = (w - 2 * e1 - d2) / (self.fastener_count - 1)  # Final spacing between holes
+            self.spacing = (h - 2 * e1 - d2) / (self.fastener_count - 1)  # Final spacing between holes
             if debug:
                 print("Distance between fasteners: " + str(self.spacing))
 
@@ -70,7 +71,7 @@ def get_coord_list(N, D, d, e_1):
         for splitter in horizontal_splitters:
             intersection = polygon.exterior.intersection(splitter)
             if intersection.is_empty:
-                quit("Intersection failed. Process Terminated.")
+                raise ValueError("Intersection failed. Process Terminated.")
             elif intersection.geom_type.startswith('Multi') or intersection.geom_type == 'GeometryCollection':
                 for shp in intersection:
                     coords_list.append(shp)
@@ -84,7 +85,7 @@ def get_coord_list(N, D, d, e_1):
 
         return coords_list
     else:
-        quit("Number of fastener is not even. Please insert an even number.")
+        raise ValueError("Number of fastener is not even. Please insert an even number.")
 
 
 def get_cg(coords_list, area, N):
@@ -162,9 +163,8 @@ def isAllowable(sigma_allowable, sigma_bearing):
             print("Allowable bearing stress check passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
         return margin
     else:
-        if debug:
-            print("Allowable bearing stress check not passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
-            quit('Bearing stress check not passed. Process terminated. ')
+        print("Allowable bearing stress check not passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
+        raise ValueError('Bearing stress check not passed. Process terminated. ')
 
 
 def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma_allowable, sigma_wall_allowable):
