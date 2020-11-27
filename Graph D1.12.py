@@ -62,7 +62,7 @@ def graph(fig,curve,x_input):
 
     for i in curve_picked:
 
-        if i[0] <= x_input and curve_picked[curve_picked.index(i)+1][0] >= x_input:
+        if i[0] <= x_input <= curve_picked[curve_picked.index(i) + 1][0]:
             x1 = i[0]
             x2 = curve_picked[curve_picked.index(i)+1][0]
 
