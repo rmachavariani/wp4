@@ -38,7 +38,7 @@ for i in range(10):
         height = float(lug_data['height']) + 0.01
         material = float(lug_data['material'])
         plate_thickness = float(lug_data['thickness_plate']) + 0.01
-        wall_thickness = float(vehicle_wall_data['thickness']) + 0.01
+        wall_thickness = float(vehicle_wall_data['thickness'])
         allowable_stress = float(lug_data['allowable_stress'])
         wall_allowable_stress = float(vehicle_wall_data['allowable_stress'])
         lug_thickness = float(lug_data['thickness_lug'])
@@ -55,6 +55,13 @@ for i in range(10):
         area = m.pi*((outer_diameter/2)**2)
 
         forces, moments = Forces.calc_forces(mmoi, mass, body_size, solar_panel_com, torques, launch_acceleration)
+        json_data['input']['lug']['width_plate'] = width
+        json_data['input']['lug']['height'] = height
+        json_data['input']['lug']['thickness_plate'] = plate_thickness
+        json_data['input']['fastener']['inner_diameter'] = inner_diameter
+        json_data['input']['fastener']['outer_diameter'] = outer_diameter
+        json_data['input']['fastener']['edge_vertical'] = edge_vertical
+        json_data['input']['fastener']['horizontal_spacing'] = horizontal_spacing
 
         bearingCheck, coord_array, fastener_count = BearingCheck.bearing_check(height, outer_diameter, material, horizontal_spacing, area,
                                                                                plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces)
