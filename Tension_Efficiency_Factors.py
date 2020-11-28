@@ -63,4 +63,4 @@ def tension_eff_graph(fig, index, x_input):  # index material to be found in the
 
 
 # tension_eff_graph(12, 3, 2.2)
-print(tension_eff_graph(12, 4, 0.32))
+# print(tension_eff_graph(12, 4, 0.32))

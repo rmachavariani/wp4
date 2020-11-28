@@ -1,6 +1,6 @@
 import numpy as np
 
-debug = True
+debug = False
 
 
 def rotational(inertia, mass_object, body, torque, array_com):
@@ -73,6 +73,5 @@ def calc_forces(inertia, mass_object, body, torque, array_com, launch_accelerati
             forces[row][column] = max(rotational_forces[row][column], launch_forces[row][column])
 
     moments = rotational_moments
-    print(forces)
 
     return forces, moments

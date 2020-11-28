@@ -5,6 +5,7 @@ from shapely.geometry import LineString, Point, box
 
 debug = False
 
+
 def bearing_check(height, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces):
     # Forces
     F_x = float(forces[3][0])

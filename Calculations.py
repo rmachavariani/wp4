@@ -3,13 +3,18 @@ import time
 import json
 import math as m
 
+import Importer
 import PullThroughCheck
+import Stress_Modes_Lug
 import BearingCheck
 import Forces
 import Weight
 
 with open('data.json', 'r+') as j:
     master_json_data = json.load(j)
+
+material_list = Importer.import_all_materials("material_sheet", ("metal", "none"))
+material_properties = material_list[0]
 
 for i in range(10):
     try:
@@ -69,6 +74,10 @@ for i in range(10):
         new_coordinates_array = []
         for fastener_coord in coord_array:
             new_coordinates_array.append([fastener_coord.x, fastener_coord.y])
+
+        # Stress Modes Lug
+        thickness_list = Stress_Modes_Lug.stress_mode_tension(material_properties, hole_diameter, lug_thickness, height / hole_diameter, forces[3][1])
+        print(thickness_list)
 
         # Pull through check
         margin_back_plate, margin_vehicle_plate = PullThroughCheck.pull_through(outer_diameter, inner_diameter, fastener_count, plate_thickness, wall_thickness,
