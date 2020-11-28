@@ -1,6 +1,6 @@
 import numpy as np
 
-debug = False
+debug = True
 
 
 def rotational(inertia, mass_object, body, torque, array_com):
@@ -12,8 +12,8 @@ def rotational(inertia, mass_object, body, torque, array_com):
     inertia_total = inertia['total']
     inertia_body = inertia['body']
 
-    v_max_x = float(torque['x']) / (float(inertia_total['x']) * 20 * (float(array_com['x']) + float(body['x'])))
-    v_max_z = float(torque['z']) / (float(inertia_total['z']) * 20 * (float(array_com['x']) + float(body['x'])))
+    v_max_x = (float(torque['x']) * 20 * (float(array_com['x']))) / float(inertia_total['x'])
+    v_max_z = (float(torque['z']) * 20 * (float(array_com['z']))) / float(inertia_total['z'])
 
     # Forces around the x-axis:
     forces[0][1] = (mass_solar_panels * (pow(v_max_x, 2))) / (float(array_com['x']))
