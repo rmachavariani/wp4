@@ -1,4 +1,4 @@
-"Shear Bearing Graphs"
+"""Shear Bearing Graphs"""
 
 # 1.13
 curve_132 = [2, [0.5, 0], [0.6, 0.2], [0.7, 0.4], [0.8, 0.55], [0.9, 0.7], [1, 0.8], [1.2, 1.2], [1.4, 1.4], [1.6, 1.6], [1.8, 1.75], [2, 1.9], [2.2, 2], [2.4, 2.1]]
@@ -38,64 +38,54 @@ curve_14006 = [0.06, [0.5, 0], [0.75, 0.5], [1, ], [1.25, 0.8], [1.5, 0.875], [1
 graph_14 = [curve_14060, curve_14040, curve_14030, curve_14020, curve_14015, curve_14012, curve_14010, curve_14008, curve_14006]
 
 
-def shearbearinggraph(fig, D_over_t, x_input):
+def shear_bearing_graph(fig, d_over_t, x_input):
     range_0 = True
+    graph_picked = None
+    y_input = 0
     if fig == 13:
-        # print("13")
         graph_picked = graph_13
-        y_input = D_over_t
+        y_input = d_over_t
         if y_input > 30:
             range_0 = False
 
     elif fig == 14:
-        # print("14")
         graph_picked = graph_14
-        y_input = D_over_t ** -1
+        y_input = d_over_t ** -1
         if y_input < 0.06:
             range_0 = False
 
     if range_0:
         p_min = 100
-        for j in graph_picked:
-            p = abs(float(j[0]) - y_input)
-            if p < p_min:
-                p_min = p
-                n = graph_picked.index(j)
+        n = None
+        if graph_picked is not None:
+            for j in graph_picked:
+                p = abs(float(j[0]) - y_input)
+                if p < p_min:
+                    p_min = p
+                    n = graph_picked.index(j)
 
-            # print(p_min)
-            # print(p)
-            # print(n)
+            if n is not None:
+                curve_picked = graph_picked[n]
 
-        curve_picked = graph_picked[n]
+                for i in curve_picked[1:]:
 
-        # print(curve_picked[1:])
+                    if i[0] <= x_input <= curve_picked[curve_picked.index(i) + 1][0]:
+                        x1 = i[0]
+                        x2 = curve_picked[curve_picked.index(i) + 1][0]
 
-        for i in curve_picked[1:]:
+                        y1 = i[1]
+                        y2 = curve_picked[curve_picked.index(i) + 1][1]
 
-            if i[0] <= x_input <= curve_picked[curve_picked.index(i) + 1][0]:
-                # print("ok")
-                x1 = i[0]
-                x2 = curve_picked[curve_picked.index(i) + 1][0]
+                        k = (x_input - x1) / (x2 - x1)
 
-                y1 = i[1]
-                y2 = curve_picked[curve_picked.index(i) + 1][1]
-                # print(y1,y2)
+                        output = (1 - k) * y1 + k * y2
 
-        k = (x_input - x1) / (x2 - x1)
-        # print(k)
-
-        output = (1 - k) * y1 + k * y2
-
-        # print(x_input,output)
-        # print("-")
+                        return output
 
     else:
         print("WARNING: RANGE OF VALIDITY EXCEEDED")
 
 
-shearbearinggraph(13, 35, 2)
-shearbearinggraph(14, 20, 2)
-
-# shearbearinggraph(13,12,1.7)
-
-# shearbearinggraph(13,22,2)
+# Valid for 0 <= d_over_t <= 16.5
+print(shear_bearing_graph(13, 10, 2))
+print(shear_bearing_graph(14, 10, 2))

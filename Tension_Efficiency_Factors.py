@@ -24,35 +24,43 @@ curve_1511 = [[0, 0], [0.1, 0.1], [0.2, 0.36], [0.3, 0.34], [0.4, 0.4], [0.5, 0.
 graph_15 = [curve_151, curve_152, curve_153, curve_158, curve_159, curve_1511]
 
 
-def tensioneffgraph(fig, index, x_input):  # index material to be found in the excel file, linking each materials to the above curves, see comments after each curve
+def tension_eff_graph(fig, index, x_input):  # index material to be found in the excel file, linking each materials to the above curves, see comments after each curve
+    graph_picked = None
     if fig == 12:
-        # print("ok")
         graph_picked = graph_12
 
     elif fig == 15:
-        # print("ok")
         graph_picked = graph_15
 
     n = int(index) - 1
 
-    curve_picked = graph_picked[n]
+    if graph_picked is not None:
+        try:
+            curve_picked = graph_picked[n]
 
-    for i in curve_picked:
+            for i in curve_picked:
 
-        if i[0] <= x_input <= curve_picked[curve_picked.index(i) + 1][0]:
-            x1 = i[0]
-            x2 = curve_picked[curve_picked.index(i) + 1][0]
+                if i[0] <= x_input <= curve_picked[curve_picked.index(i) + 1][0]:
+                    x1 = i[0]
+                    x2 = curve_picked[curve_picked.index(i) + 1][0]
 
-            y1 = i[1]
-            y2 = curve_picked[curve_picked.index(i) + 1][1]
-            # print(y1,y2)
+                    y1 = i[1]
+                    y2 = curve_picked[curve_picked.index(i) + 1][1]
+                    # print(y1,y2)
 
-    k = (x_input - x1) / (x2 - x1)
-    # print(k)
+                    k = (x_input - x1) / (x2 - x1)
+                    # print(k)
 
-    output = (1 - k) * y1 + k * y2
+                    output = (1 - k) * y1 + k * y2
 
-    print(output)
+                    return output
 
-# tensioneffgraph(12,3,2.2)
-# tensioneffgraph(15,4,0.32)
+        except IndexError:
+            print(f"Wrong curve selected; curve {n}")
+
+    else:
+        print(f"Wrong figure index provided in Tension_efficiency_Factors; figure {fig}, index {index}, x_input {x_input}")
+
+
+# tension_eff_graph(12, 3, 2.2)
+print(tension_eff_graph(12, 4, 0.32))
