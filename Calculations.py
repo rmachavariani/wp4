@@ -107,7 +107,7 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         # Calculate forces
         forces, moments = Forces.calc_forces(mmoi, mass, body_size, solar_panel_com, torques, launch_acceleration)
 
-        edge_to_center_hole_distance = horizontal_spacing + hole_diameter/2
+        edge_to_center_hole_distance = height/2 - hole_diameter/2
 
 
         tensile_load = forces[3][1]
@@ -118,11 +118,12 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         P_bru, P_bry, P_bush_y, shear_bearing_margin, shear_bearing_yield_margin, bushing_margin = LugCheck.check_shear_bearing(hole_diameter, lug_thickness, edge_to_center_hole_distance,
                         tensile_load, material_properties_attachment.ult_stress, material_properties_attachment.ult_stress)
 
-        print("margin", shear_bearing_margin)
-        quit()
-
+        # Need cvalue from Justin
+        P_bru_t = 15
         P_tu_transverse, P_ty_transverse, ultimate_transverse_margin, ultimate_transverse_yield_margin = LugCheck.check_bolt_pin_bending(hole_diameter, lug_thickness, height, edge_to_center_hole_distance,
-                            material_properties_attachment.index_15, transverse_load, axial_load, material_properties_attachment.ult_stress, ultimate_allowable_tension_load, P_bru)
+                            material_properties_attachment.index_15, transverse_load, axial_load, material_properties_attachment.ult_stress, P_bru_t, P_bru)
+
+
 
         # Calculate phi from Fastener type
         phi = Fastener_type.Fastener_Type(plate_thickness, wall_thickness, inner_diameter, outer_diameter,

@@ -28,7 +28,7 @@ def check_shear_bearing( hole_diameter, lug_thickness, edge_to_center_hole_dista
 
     shear_bearing_margin = (P_bru/tensile_load) - 1
     shear_bearing_yield_margin = (P_bry/tensile_load) - 1
-    bushing_margin = (P_bush_y/F_yield) - 1
+    bushing_margin = (P_bush_y/tensile_load) - 1
 
     return P_bru, P_bry, P_bush_y, shear_bearing_margin, shear_bearing_yield_margin, bushing_margin
 
@@ -41,6 +41,8 @@ def check_bolt_pin_bending(hole_diameter, lug_thickness, lug_height, edge_to_cen
     A2 = (lug_height - hole_diameter / 2) * lug_thickness
     A3 = (edge_to_center_hole_distance - hole_diameter / 2) * lug_thickness
     A4 = A1
+    print(A1, A2, A3, A4)
+    quit()
 
     A_br = hole_diameter * lug_thickness
     A_av = 6 / (3 / A1 + 1 / A2 + 1 / A3 + 1 / A4)
