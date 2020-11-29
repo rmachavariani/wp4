@@ -177,13 +177,13 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         print(error)
 
 
-left = {"width": 0.1, "height": 0.012, "lug_thickness": 0.0008, "plate_thickness": 0.0008, "wall_thickness": 0.0008,
+left = {"width": 0.1, "w_over_d": 1.1, "lug_thickness": 0.0008, "plate_thickness": 0.0008, "wall_thickness": 0.0008,
         "hole_diameter": 0.002, "inner_diameter": 0.002, "outer_diameter": 0.002, "edge_vertical": 0.0025, "horizontal_spacing": 0.0001}
 
-right = {"width": 0.5, "height": 0.5, "lug_thickness": 0.2, "plate_thickness": 0.2, "wall_thickness": 0.2,
+right = {"width": 0.5, "w_over_d": 5, "lug_thickness": 0.2, "plate_thickness": 0.2, "wall_thickness": 0.2,
          "hole_diameter": 0.2, "inner_diameter": 0.01, "outer_diameter": 0.01, "edge_vertical": 0.5, "horizontal_spacing": 0.4}
 
-steps = {"width": 4, "height": 4, "lug_thickness": 4, "plate_thickness": 4, "wall_thickness": 4,
+steps = {"width": 4, "w_over_d": 4, "lug_thickness": 4, "plate_thickness": 4, "wall_thickness": 4,
          "hole_diameter": 4, "inner_diameter": 4, "outer_diameter": 4, "edge_vertical": 4, "horizontal_spacing": 4}
 
 total_iterations = 0
@@ -194,7 +194,7 @@ print(f"Total iterations: {total_iterations}")
 
 step = 0
 for width_step in np.linspace(left['width'], right['width'], steps['width'])[::-1]:
-    for height_step in np.linspace(left['height'], right['height'], steps['height'])[::-1]:
+    for w_over_d_step in np.linspace(left['w_over_d'], right['w_over_d'], steps['w_over_d'])[::-1]:
         for lug_thickness_step in np.linspace(left['lug_thickness'], right['lug_thickness'], steps['lug_thickness'])[::-1]:
             for plate_thickness_step in np.linspace(left['plate_thickness'], right['plate_thickness'], steps['plate_thickness'])[::-1]:
                 for wall_thickness_step in np.linspace(left['wall_thickness'], right['wall_thickness'], steps['wall_thickness'])[::-1]:
@@ -204,6 +204,7 @@ for width_step in np.linspace(left['width'], right['width'], steps['width'])[::-
                                 if inner_diameter_step < outer_diameter_step:
                                     # Iteration
                                     hole_diameter_step = 0.010
+                                    height_step = w_over_d_step * hole_diameter_step
                                     iteration_data = iteration(master_json_data, step, width_step, height_step, lug_thickness_step, plate_thickness_step, wall_thickness_step,
                                                                hole_diameter_step, inner_diameter_step, outer_diameter_step, horizontal_spacing_step)
 
