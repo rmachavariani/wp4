@@ -37,12 +37,10 @@ def check_bolt_pin_bending(hole_diameter, lug_thickness, lug_height, edge_to_cen
                             material_index, transverse_load, axial_load, material_ultimate_tensile_strength, ultimate_allowable_tension_load,
                            ultimate_shear_bearing_failure):
 
-    A1 = (lug_height - hole_diameter / m.sqrt(hole_diameter)) * lug_thickness
-    A2 = (lug_height - hole_diameter / 2) * lug_thickness
-    A3 = (edge_to_center_hole_distance - hole_diameter / 2) * lug_thickness
+    A1 = abs((lug_height - hole_diameter / m.sqrt(hole_diameter)) * lug_thickness)
+    A2 = abs((lug_height - hole_diameter / 2) * lug_thickness)
+    A3 = abs((edge_to_center_hole_distance - hole_diameter / 2) * lug_thickness)
     A4 = A1
-    print(A1, A2, A3, A4)
-    quit()
 
     A_br = hole_diameter * lug_thickness
     A_av = 6 / (3 / A1 + 1 / A2 + 1 / A3 + 1 / A4)
