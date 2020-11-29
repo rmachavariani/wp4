@@ -171,6 +171,13 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         print(f"{i + 1}; Thickness list: {margin_lug}")
         print(f"{i + 1}; Pull Through Check: {margin_back_plate}, {margin_vehicle_plate}")
         print(f"{i + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
+        print(f"{i + 1}; Shear Out Bearing Lug Check: {shear_bearing_margin}, {P_bru}")
+        print(f"{i + 1}; Shear Out Bearing Yield Lug Check: {shear_bearing_yield_margin}, {P_bry}")
+        print(f"{i + 1}; Bushing Lug Check: {bushing_margin}, {P_bush_y}")
+        print(f"{i + 1}; Transverse Lug Check: {ultimate_transverse_margin}, {P_tu_transverse}")
+        print(f"{i + 1}; Transverse Yield Lug Check: {ultimate_transverse_yield_margin}, {P_ty_transverse}")
+
+
 
         return master_json_data
 
