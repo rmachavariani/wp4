@@ -168,7 +168,7 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
               f" horizontal_spacing = {round(horizontal_spacing, rv)}")
 
         print(f"{i + 1}; Bearing Check: {bearing_check}")
-        print(f"{i + 1}; Thickness list: {margin_lug}")
+        print(f"{i + 1}; Lug Check: {margin_lug}")
         print(f"{i + 1}; Pull Through Check: {margin_back_plate}, {margin_vehicle_plate}")
         print(f"{i + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
 
