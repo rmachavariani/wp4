@@ -7,9 +7,9 @@
                     "edge_horizontal": "0.03",
                     "edge_vertical": "0.01",
                     "horizontal_spacing": "0.1",
-                    "inner_diameter": "0.015",
+                    "inner_diameter": "0.001",
                     "material": "1",
-                    "outer_diameter": "0.02"
+                    "outer_diameter": "0.002"
                 },
                 "lug": {
                     "allowable_stress": "520000000",
@@ -19,7 +19,7 @@
                     "length_lug": "1",
                     "lug_spacing": "0.5",
                     "material": "1",
-                    "number": "1",
+                    "number": "4",
                     "thickness_lug": "0.05",
                     "thickness_plate": "0.05",
                     "width_plate": "0.2"
@@ -69,7 +69,7 @@
                 },
                 "vehicle_wall": {
                     "allowable_stress": "50000000",
-                    "thickness": "0.07"
+                    "thickness": "0.01"
                 }
             },
             "output": {

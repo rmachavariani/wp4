@@ -24,16 +24,19 @@ def Fastener_Type(thickness_backplate, thickness_vehiclewall, inner_diameter_fas
     A_head = pi * ((D_fo / 2) ** 2)
     A_eng = pi * ((D_fi / 2) ** 2)
 
-    # Calculating the delta for the back_plate
-    delta_a1 = 4 * t2 / (Eb * pi * ((D_fo ** 2) - (D_fi ** 2)))
+    try:
+        # Calculating the delta for the back_plate
+        delta_a1 = 4 * t2 / (Eb * pi * ((D_fo ** 2) - (D_fi ** 2)))
 
-    # Calculating the delta for the vehicle wall
-    delta_a2 = 4 * t3 / (Ev * pi * ((D_fo ** 2) - (D_fi ** 2)))
+        # Calculating the delta for the vehicle wall
+        delta_a2 = 4 * t3 / (Ev * pi * ((D_fo ** 2) - (D_fi ** 2)))
 
-    # Calculating the delta for the bolt
-    delta_b = (1 / Ef) * ((L_nut / A_nut) + (L_shank / A_shank) + (L_head / A_head) + (L_eng / A_eng))
+        # Calculating the delta for the bolt
+        delta_b = (1 / Ef) * ((L_nut / A_nut) + (L_shank / A_shank) + (L_head / A_head) + (L_eng / A_eng))
 
-    # Force ratio
-    phi = (delta_a1 + delta_a2) / (delta_b + delta_a1 + delta_a2)
+        # Force ratio
+        phi = (delta_a1 + delta_a2) / (delta_b + delta_a1 + delta_a2)
+    except ZeroDivisionError:
+        phi = None
 
     return phi
