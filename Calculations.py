@@ -24,7 +24,7 @@ material_properties_vehicle = material_list[4]
 print(f"Done importing, starting iteration\n")
 
 
-def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_thickness, hole_diameter, inner_diameter, outer_diameter, edge_vertical, horizontal_spacing):
+def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_thickness, hole_diameter, inner_diameter, outer_diameter, horizontal_spacing):
     try:
         json_data = json_file['iterations']
 
@@ -72,7 +72,6 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         # Fastener data
         # inner_diameter = float(fastener_data['inner_diameter']) + step_sizes['inner_diameter']
         # outer_diameter = float(fastener_data['outer_diameter']) + step_sizes['outer_diameter']
-        # edge_vertical = float(fastener_data['edge_vertical']) + step_sizes['edge_vertical']
         # horizontal_spacing = float(fastener_data['horizontal_spacing']) + step_sizes['horizontal_spacing']
         fastener_density = float(fastener_data['density'])
         area = m.pi * ((outer_diameter / 2) ** 2)
@@ -86,7 +85,6 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         json_data['input']['vehicle_wall']['thickness'] = wall_thickness
         json_data['input']['fastener']['inner_diameter'] = inner_diameter
         json_data['input']['fastener']['outer_diameter'] = outer_diameter
-        json_data['input']['fastener']['edge_vertical'] = edge_vertical
         json_data['input']['fastener']['horizontal_spacing'] = horizontal_spacing
 
         # Calculate forces
@@ -166,7 +164,6 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
               f" hole_diameter = {round(hole_diameter, rv)},"  # D1
               f" inner_diameter = {round(inner_diameter, rv)},"  # Dfi = D2
               f" outer_diameter = {round(outer_diameter, rv)},"  # Dfo 
-              f" edge_vertical = {round(edge_vertical, rv)},"  # e1
               f" horizontal_spacing = {round(horizontal_spacing, rv)}")
 
         print(f"{i + 1}; Bearing Check: {bearing_check}")
@@ -203,19 +200,18 @@ for width_step in np.linspace(left['width'], right['width'], steps['width'])[::-
                 for wall_thickness_step in np.linspace(left['wall_thickness'], right['wall_thickness'], steps['wall_thickness'])[::-1]:
                     for inner_diameter_step in np.linspace(left['inner_diameter'], right['inner_diameter'], steps['inner_diameter'])[::-1]:
                         for outer_diameter_step in np.linspace(left['outer_diameter'], right['outer_diameter'], steps['outer_diameter'])[::-1]:
-                            for edge_vertical_step in np.linspace(1.5 * inner_diameter_step, 0.5 * width_step, steps['edge_vertical'])[::-1]:
-                                for horizontal_spacing_step in np.linspace(left['horizontal_spacing'], right['horizontal_spacing'], steps['horizontal_spacing'])[::-1]:
-                                    if inner_diameter_step < outer_diameter_step:
-                                        # Iteration
-                                        hole_diameter_step = 0.010
-                                        iteration_data = iteration(master_json_data, step, width_step, height_step, lug_thickness_step, plate_thickness_step, wall_thickness_step,
-                                                                   hole_diameter_step, inner_diameter_step, outer_diameter_step, edge_vertical_step, horizontal_spacing_step)
+                            for horizontal_spacing_step in np.linspace(left['horizontal_spacing'], right['horizontal_spacing'], steps['horizontal_spacing'])[::-1]:
+                                if inner_diameter_step < outer_diameter_step:
+                                    # Iteration
+                                    hole_diameter_step = 0.010
+                                    iteration_data = iteration(master_json_data, step, width_step, height_step, lug_thickness_step, plate_thickness_step, wall_thickness_step,
+                                                               hole_diameter_step, inner_diameter_step, outer_diameter_step, horizontal_spacing_step)
 
-                                        if iteration_data is not None:
-                                            master_json_data = iteration_data
-                                            print(f"Percentage finished {step / (total_iterations * 100)} %\n")
+                                    if iteration_data is not None:
+                                        master_json_data = iteration_data
+                                        print(f"Percentage finished {step / (total_iterations * 100)} %\n")
 
-                                            step += 1
+                                        step += 1
 
 with open('data_iterations.json', 'w+') as j:
     json.dump(master_json_data, j, indent=4, sort_keys=True)
