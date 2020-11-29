@@ -51,11 +51,8 @@ def pull_through(d_fo, d_fi, n_f, t2, t3, yield_stress_back_plate, yield_stress_
         if debug:
             print('tau = ', shear_stress)
 
-        difference_back_plate = abs(shear_stress) - shear_yield_stress_back_plate
-        difference_vehicle_plate = abs(shear_stress) - shear_yield_stress_vehicle_plate
-
-        margin_back_plate.append(difference_back_plate)
-        margin_vehicle_plate.append(difference_vehicle_plate)
+        margin_back_plate.append((shear_yield_stress_back_plate / abs(shear_stress)) - 1)
+        margin_vehicle_plate.append((shear_yield_stress_vehicle_plate / abs(shear_stress)) - 1)
 
         n = n + 1
 
