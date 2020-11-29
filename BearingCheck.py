@@ -159,8 +159,8 @@ def getBearingStress(P, D, t, thermal_stress):
 
 
 def isAllowable(sigma_allowable, sigma_bearing):
-    result = sigma_allowable >= sigma_bearing
-    margin = sigma_bearing - sigma_allowable
+    margin = (sigma_allowable / sigma_bearing) - 1
+    result = margin > 0
     if result:
         if debug:
             print("Allowable bearing stress check passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")

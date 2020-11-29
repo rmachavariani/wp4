@@ -1,5 +1,4 @@
 import numpy as np
-import time
 import json
 import math as m
 
@@ -25,9 +24,7 @@ print(f"Done importing, starting iteration\n")
 
 
 def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_thickness, hole_diameter, inner_diameter, outer_diameter, edge_vertical, horizontal_spacing):
-    start_time = time.time()
     try:
-        print(f"{i + 1}; Loading variables")
         json_data = json_file['iterations']
 
         int_list = list(map(int, json_data.keys()))
@@ -91,18 +88,6 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         json_data['input']['fastener']['edge_vertical'] = edge_vertical
         json_data['input']['fastener']['horizontal_spacing'] = horizontal_spacing
 
-        rv = 5
-        print(f"{i + 1}; Calculating with: width = {round(width, rv)},"
-              f" height = {round(height, rv)},"  # w
-              f" lug_thickness = {round(lug_thickness, rv)},"  # t1
-              f" plate_thickness = {round(plate_thickness, rv)},"  # t2
-              f" wall_thickness = {round(wall_thickness, rv)},"  # t3
-              f" hole_diameter = {round(hole_diameter, rv)},"  # D1
-              f" inner_diameter = {round(inner_diameter, rv)},"  # Dfi = D2
-              f" outer_diameter = {round(outer_diameter, rv)},"  # Dfo 
-              f" edge_vertical = {round(edge_vertical, rv)},"  # e1
-              f" horizontal_spacing = {round(horizontal_spacing, rv)}")
-
         # Calculate forces
         forces, moments = Forces.calc_forces(mmoi, mass, body_size, solar_panel_com, torques, launch_acceleration)
 
@@ -121,8 +106,6 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         bearing_check, coord_array, fastener_count = BearingCheck.bearing_check(height, outer_diameter, material_type, horizontal_spacing, area,
                                                                                 plate_thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces, thermal_stresses)
 
-        print(f"{i + 1}; Bearing Check: {bearing_check}")
-
         # Convert coordinates from point array to python list
         new_coordinates_array = []
         for fastener_coord in coord_array:
@@ -130,24 +113,15 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
 
         # Stress Modes Lug
         w_over_d = height / hole_diameter  # 1 < w_over_d < 5
-        thickness_list = Stress_Modes_Lug.stress_mode_tension(material_properties_attachment, hole_diameter, lug_thickness, w_over_d, forces[3][1])
-        if not thickness_list:
-            print('Thickness list could not be made')
-            return
-
-        print(f"{i + 1}; Thickness list: {thickness_list}")
+        margin_lug = Stress_Modes_Lug.stress_mode_tension(material_properties_attachment, hole_diameter, lug_thickness, w_over_d, forces[3][1])
 
         # Pull through check
         margin_back_plate, margin_vehicle_plate = PullThroughCheck.pull_through(outer_diameter, inner_diameter, fastener_count, plate_thickness, wall_thickness,
                                                                                 allowable_stress, wall_allowable_stress, new_coordinates_array, forces[3][1], moments[3][2])
 
-        print(f"{i + 1}; Pull Through Check: {margin_back_plate}, {margin_vehicle_plate}")
-
         # Mass
         mass_fastener = Weight.calc_mass_fasteners(plate_thickness, wall_thickness, outer_diameter, fastener_density)
         mass_attachment = Weight.calc_mass_attachment(plate_thickness, width, height, fastener_count, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density)
-
-        print(f"{i + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
 
         # Update json file
         json_data['output']['bearing_check']['margins']['plate'] = bearing_check[0]
@@ -165,14 +139,31 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
 
         master_json_data['iterations'].update(new_json_data)
 
-        return master_json_data, time.time() - start_time
+        rv = 5
+        print(f"{i + 1}; Calculating with: width = {round(width, rv)},"
+              f" height = {round(height, rv)},"  # w
+              f" lug_thickness = {round(lug_thickness, rv)},"  # t1
+              f" plate_thickness = {round(plate_thickness, rv)},"  # t2
+              f" wall_thickness = {round(wall_thickness, rv)},"  # t3
+              f" hole_diameter = {round(hole_diameter, rv)},"  # D1
+              f" inner_diameter = {round(inner_diameter, rv)},"  # Dfi = D2
+              f" outer_diameter = {round(outer_diameter, rv)},"  # Dfo 
+              f" edge_vertical = {round(edge_vertical, rv)},"  # e1
+              f" horizontal_spacing = {round(horizontal_spacing, rv)}")
+
+        print(f"{i + 1}; Bearing Check: {bearing_check}")
+        print(f"{i + 1}; Thickness list: {margin_lug}")
+        print(f"{i + 1}; Pull Through Check: {margin_back_plate}, {margin_vehicle_plate}")
+        print(f"{i + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
+
+        return master_json_data
 
     except Exception as error:
         print(error)
 
 
-left = {"width": 0, "height": 0, "lug_thickness": 0, "plate_thickness": 0, "wall_thickness": 0,
-        "hole_diameter": 0, "inner_diameter": 0, "outer_diameter": 0, "edge_vertical": 0, "horizontal_spacing": 0}
+left = {"width": 0.1, "height": 0.012, "lug_thickness": 0.0008, "plate_thickness": 0.0008, "wall_thickness": 0.0008,
+        "hole_diameter": 0.002, "inner_diameter": 0.002, "outer_diameter": 0.002, "edge_vertical": 0.0025, "horizontal_spacing": 0.0001}
 
 right = {"width": 0.5, "height": 0.5, "lug_thickness": 0.2, "plate_thickness": 0.2, "wall_thickness": 0.2,
          "hole_diameter": 0.2, "inner_diameter": 0.01, "outer_diameter": 0.01, "edge_vertical": 0.5, "horizontal_spacing": 0.4}
@@ -189,23 +180,24 @@ print(f"Total iterations: {total_iterations}")
 step = 0
 for width_step in np.linspace(left['width'], right['width'], steps['width'])[::-1]:
     for height_step in np.linspace(left['height'], right['height'], steps['height'])[::-1]:
-        for lug_thickness_step in np.linspace(left['lug_thickness'], right['height'], steps['lug_thickness'])[::-1]:
-            for plate_thickness_step in np.linspace(left['plate_thickness'], right['height'], steps['plate_thickness'])[::-1]:
-                for wall_thickness_step in np.linspace(left['wall_thickness'], right['height'], steps['wall_thickness'])[::-1]:
-                    for hole_diameter_step in np.linspace(left['hole_diameter'], right['height'], steps['hole_diameter'])[::-1]:
-                        for inner_diameter_step in np.linspace(left['inner_diameter'], right['height'], steps['inner_diameter'])[::-1]:
-                            for outer_diameter_step in np.linspace(left['outer_diameter'], right['height'], steps['outer_diameter'])[::-1]:
-                                for edge_vertical_step in np.linspace(left['edge_vertical'], right['height'], steps['edge_vertical'])[::-1]:
-                                    for horizontal_spacing_step in np.linspace(left['horizontal_spacing'], right['height'], steps['horizontal_spacing'])[::-1]:
+        for lug_thickness_step in np.linspace(left['lug_thickness'], right['lug_thickness'], steps['lug_thickness'])[::-1]:
+            for plate_thickness_step in np.linspace(left['plate_thickness'], right['plate_thickness'], steps['plate_thickness'])[::-1]:
+                for wall_thickness_step in np.linspace(left['wall_thickness'], right['wall_thickness'], steps['wall_thickness'])[::-1]:
+                    for inner_diameter_step in np.linspace(left['inner_diameter'], right['inner_diameter'], steps['inner_diameter'])[::-1]:
+                        for outer_diameter_step in np.linspace(left['outer_diameter'], right['outer_diameter'], steps['outer_diameter'])[::-1]:
+                            for edge_vertical_step in np.linspace(1.5 * inner_diameter_step, 0.5 * width_step, steps['edge_vertical'])[::-1]:
+                                for horizontal_spacing_step in np.linspace(left['horizontal_spacing'], right['horizontal_spacing'], steps['horizontal_spacing'])[::-1]:
+                                    if inner_diameter_step < outer_diameter_step:
                                         # Iteration
+                                        hole_diameter_step = 0.010
                                         iteration_data = iteration(master_json_data, step, width_step, height_step, lug_thickness_step, plate_thickness_step, wall_thickness_step,
                                                                    hole_diameter_step, inner_diameter_step, outer_diameter_step, edge_vertical_step, horizontal_spacing_step)
 
                                         if iteration_data is not None:
-                                            master_json_data, delta_time = iteration_data
-                                            print(f"Time needed is {(delta_time * (10 ** 9) - step) / (60 * 60)} hr \n")
+                                            master_json_data = iteration_data
+                                            print(f"Percentage finished {step / (total_iterations * 100)} %\n")
 
-                                        step += 1
+                                            step += 1
 
 with open('data_iterations.json', 'w+') as j:
     json.dump(master_json_data, j, indent=4, sort_keys=True)
