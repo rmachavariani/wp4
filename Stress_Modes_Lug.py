@@ -17,7 +17,7 @@ def stress_mode_tension(material, hole_diameter, thickness, w_over_d, force_y):
         area_tension = hole_diameter * thickness * (w_over_d - 1)
 
         sigma_tu = force_y / (margin_of_safety * K_tension * area_tension)
-        margin = (sigma_tu / sigma_ult) - 1
+        margin = (sigma_ult / sigma_tu) - 1
         return margin
 
     except TypeError:
