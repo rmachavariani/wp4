@@ -166,7 +166,7 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
               f" horizontal_spacing = {round(horizontal_spacing, rv)}")
 
         print(f"{i + 1}; Bearing Check: {bearing_check}")
-        print(f"{i + 1}; Thickness list: {margin_lug}")
+        print(f"{i + 1}; Lug Stress Check: {margin_lug}")
         print(f"{i + 1}; Pull Through Check: {margin_back_plate}, {margin_vehicle_plate}")
         print(f"{i + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
         print(f"{i + 1}; Shear Out Bearing Lug Check: {shear_bearing_margin}, {P_bru}")
@@ -186,7 +186,7 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
 left = {"width": 0.1, "w_over_d": 1.1, "lug_thickness": 0.0008, "plate_thickness": 0.0008, "wall_thickness": 0.0008,
         "hole_diameter": 0.002, "inner_diameter": 0.002, "outer_diameter": 0.002, "edge_vertical": 0.0025, "horizontal_spacing": 0.0001}
 
-right = {"width": 0.5, "w_over_d": 5, "lug_thickness": 0.2, "plate_thickness": 0.2, "wall_thickness": 0.2,
+right = {"width": 0.5, "w_over_d": 5, "lug_thickness": 0.02, "plate_thickness": 0.2, "wall_thickness": 0.2,
          "hole_diameter": 0.2, "inner_diameter": 0.01, "outer_diameter": 0.01, "edge_vertical": 0.5, "horizontal_spacing": 0.4}
 
 steps = {"width": 4, "w_over_d": 4, "lug_thickness": 4, "plate_thickness": 4, "wall_thickness": 4,
