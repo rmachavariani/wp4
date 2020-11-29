@@ -7,6 +7,7 @@ import Graphs
 
 def check_shear_bearing(hole_diameter, lug_thickness, edge_to_center_hole_distance, lug_allowable_stress,
                         material_index, material_tensile_strength, lug_yield_strength, compressive_yield_strength_bushing):
+
     # 1 - shear-bearing failure
     margin_of_safety = 0.15
     material_tensile_strength = material_tensile_strength / margin_of_safety
@@ -49,7 +50,7 @@ def check_bolt_pin_bending(hole_diameter, lug_thickness, lug_height, edge_to_cen
     P_tu = K_tu * A_br * material_tensile_strength
     P_ty = K_ty * A_br * lug_yield_strength
 
-
     R_a = axial_load / min(ultimate_allowable_tension_load, ultimate_shear_bearing_failure)
     R_tr = transverse_load / P_tu
     margin_of_safety = 1 / pow((pow(R_a, 1.6) + pow(R_tr, 1.6)), 0.625) - 1
+

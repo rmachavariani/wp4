@@ -17,6 +17,7 @@ class Material:
         self.e_0 = 0
         self.e_90 = 0
         self.g = 0
+        self.alpha = 0
         self.yield_stress = 0
         self.ult_stress = 0
         self.cr_stress = 0
@@ -25,7 +26,7 @@ class Material:
 
     def import_material(self, material_type, material_choice):
         self.material_type = material_type
-        print(f"Importing {material_type}, {material_choice}")
+        print(f"Importing {material_type}; {material_choice[0]} {material_choice[1]}")
         try:
             with open(f"./{self.path}.csv") as file:
                 reader = csv.reader(file, delimiter=',')
@@ -36,7 +37,10 @@ class Material:
 
                     if (row[1].strip().lower(), row[2].strip().lower()) == (material_choice[0].strip().lower(), material_choice[1].strip().lower()):
                         for i, value in enumerate(row):
-                            self.__dict__[component_attributes[i].strip().lower()] = value
+                            try:
+                                self.__dict__[component_attributes[i].strip().lower()] = float(value)
+                            except ValueError:
+                                self.__dict__[component_attributes[i].strip().lower()] = value
 
         except FileNotFoundError:
             print("Material sheet file not found, make sure that the right path is given")

@@ -6,7 +6,7 @@ from shapely.geometry import LineString, Point, box
 debug = False
 
 
-def bearing_check(height, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces):
+def bearing_check(height, diameter, material, horizontal_spacing, area, thickness, wall_thickness, allowable_stress, wall_allowable_stress, forces, thermal_stresses):
     # Forces
     F_x = float(forces[3][0])
     F_z = float(forces[3][2])
@@ -24,7 +24,8 @@ def bearing_check(height, diameter, material, horizontal_spacing, area, thicknes
                                             cg[0], cg[1], F_x, F_z,
                                             coordinates_array)
 
-        margins = get_stress_check(inplane_forces[0], inplane_forces[2], inplane_forces[1], diameter, thickness, wall_thickness, allowable_stress, wall_allowable_stress)
+        margins = get_stress_check(inplane_forces[0], inplane_forces[2], inplane_forces[1], diameter, thickness, wall_thickness, allowable_stress,
+                                   wall_allowable_stress, thermal_stresses)
         return margins, coordinates_array, fasteners.fastener_count
 
 
@@ -114,8 +115,8 @@ def SumR_Squared (coo,cg_x,cg_z): # is the sum of the square distances of each f
     return S
 
 
-def get_inplane_forces (n, x, z, cg_x, cg_z, F_x, F_z, coo):  #Required Variables: number of fast., coo single fast., S: see above, coo cg(4.5), force components (4.1)
-    #check whether resultant of F_x and F_z acts through the cg of the fasteners
+def get_inplane_forces (n, x, z, cg_x, cg_z, F_x, F_z, coo):  # Required Variables: number of fast., coo single fast., S: see above, coo cg(4.5), force components (4.1)
+    # Check whether resultant of F_x and F_z acts through the cg of the fasteners
     F_inplane_x = F_x / n
     F_inplane_z = F_z / n
 
@@ -135,7 +136,7 @@ def get_inplane_forces (n, x, z, cg_x, cg_z, F_x, F_z, coo):  #Required Variable
         M = abs(np.cross(d,F))
         r = m.sqrt((z-cg_z)**2+(x-cg_x)**2)
         S = SumR_Squared(coo,cg_x,cg_z)
-        F_inplane_M = (M*r)/S    # looking at Eq 4.4 in the manual a more general version is represented, however since all cross-sectional areas will bes the same, this eqaution can be simplified by putting the area outside the summation, and thus cancelling out
+        F_inplane_M = (M*r)/S  # Looking at Eq 4.4 in the manual a more general version is represented, however since all cross-sectional areas will bes the same, this eqaution can be simplified by putting the area outside the summation, and thus cancelling out
 
     forces = np.array([F_inplane_x,F_inplane_z ,F_inplane_M])
     if debug:
@@ -151,9 +152,10 @@ def getResultant(F_x, F_y, F_z):
     return R
 
 
-def getBearingStress(P, D, t):
-    sigma = P / (D * t)
-    return sigma #1.5 margin of safety removed, and to be included in WP4.13
+def getBearingStress(P, D, t, thermal_stress):
+    # Get the maximum stress due to bearing stress and thermal stresses
+    sigma = max(abs(P / (D * t) + thermal_stress[0]), abs(P / (D * t) + thermal_stress[1]))
+    return sigma  # 1.5 margin of safety removed, and to be included in WP4.13
 
 
 def isAllowable(sigma_allowable, sigma_bearing):
@@ -168,10 +170,10 @@ def isAllowable(sigma_allowable, sigma_bearing):
         raise ValueError('Bearing stress check not passed. Process terminated. ')
 
 
-def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma_allowable, sigma_wall_allowable):
+def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma_allowable, sigma_wall_allowable, thermal_stresses):
     R = getResultant(F_inplane_x, F_inplane_y, F_inplane_z)
-    sigma_bearing = getBearingStress(R, D, t)
-    sigma_wall_bearing = getBearingStress(R, D, t_wall)
+    sigma_bearing = getBearingStress(R, D, t, thermal_stresses['attachment_stress'])
+    sigma_wall_bearing = getBearingStress(R, D, t_wall, thermal_stresses['vehicle_stress'])
 
     if debug:
         print("Checking plate allowable stress:")

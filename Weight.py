@@ -16,8 +16,7 @@ def calc_mass_fasteners(plate_thickness, wall_thickness, outer_diameter, fastene
 
 def calc_mass_attachment(plate_thickness, width, height, number, inner_diameter, lug_thickness, lug_length, hole_diameter, lug_density):
     volume_backup_plate = plate_thickness * width * height - number * (m.pi * inner_diameter ** 2) / 4 * plate_thickness
-    volume_lug = lug_thickness * height * (lug_length - (height - hole_diameter) / 2 - hole_diameter / 2) + lug_thickness * (m.pi * height ** 2) / 8 - height * (
-                m.pi * hole_diameter ** 2) / 4
+    volume_lug = (lug_thickness * m.pi * height ** 2) / 4 + 2 * (lug_length - height) * height * lug_thickness - (lug_thickness * m.pi * hole_diameter ** 2) / 8
 
     total_volume = volume_backup_plate + number * volume_lug
 
