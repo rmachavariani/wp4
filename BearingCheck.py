@@ -67,7 +67,7 @@ def get_coord_list(N, D, d, e_1):
         minx, miny, maxx, maxy = polygon.bounds
 
         dy = D + e_1
-        horizontal_splitters = [LineString([(minx, miny + i * dy), (maxx, miny + i * dy)]) for i in range(int(ny) - 1)]  # TEMP FIX
+        horizontal_splitters = [LineString([(minx, miny + i * dy), (maxx, miny + i * dy)]) for i in range(int(ny))]  # TEMP FIX
         coords_list = list()
 
         for splitter in horizontal_splitters:
