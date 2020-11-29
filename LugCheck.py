@@ -34,7 +34,7 @@ def check_shear_bearing( hole_diameter, lug_thickness, edge_to_center_hole_dista
 
 
 def check_bolt_pin_bending(hole_diameter, lug_thickness, lug_height, edge_to_center_hole_distance,
-                            material_index, transverse_load, axial_load, material_ultimate_tensile_strength,
+                           material, transverse_load, axial_load, material_ultimate_tensile_strength,
                            ultimate_shear_bearing_failure):
 
     A1 = abs((lug_height - hole_diameter / m.sqrt(hole_diameter)) * lug_thickness)
@@ -46,9 +46,9 @@ def check_bolt_pin_bending(hole_diameter, lug_thickness, lug_height, edge_to_cen
     A_av = 6 / (3 / A1 + 1 / A2 + 1 / A3 + 1 / A4)
     x_input = A_av / A_br
 
-    K_tu = Tension_Efficiency_Factors_Graphs.tension_eff_graph(15, material_index, x_input)
-    K_ty = Tension_Efficiency_Factors_Graphs.tension_eff_graph(15, material_index, x_input)
-    K_tu_12 = Tension_Efficiency_Factors_Graphs.tension_eff_graph(12, material_index, x_input)
+    K_tu = Tension_Efficiency_Factors_Graphs.tension_eff_graph(15, material.index_15, x_input)
+    K_ty = Tension_Efficiency_Factors_Graphs.tension_eff_graph(15, material.index_15, x_input)
+    K_tu_12 = Tension_Efficiency_Factors_Graphs.tension_eff_graph(12, material.index_12, x_input)
 
     ultimate_allowable_tension_load = 0.15 * K_tu_12 * A_br * material_ultimate_tensile_strength
 

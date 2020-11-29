@@ -102,7 +102,7 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
                         tensile_load, material_properties_attachment.ult_stress, material_properties_attachment.ult_stress)
 
         P_tu_transverse, P_ty_transverse, ultimate_transverse_margin, ultimate_transverse_yield_margin = LugCheck.check_bolt_pin_bending(hole_diameter, lug_thickness, height, edge_to_center_hole_distance,
-                            material_properties_attachment.index_15, transverse_load, axial_load, material_properties_attachment.ult_stress, P_bru)
+                            material_properties_attachment, transverse_load, axial_load, material_properties_attachment.ult_stress, P_bru)
 
 
 
@@ -168,14 +168,12 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         print(f"{i + 1}; Bearing Check: {bearing_check}")
         print(f"{i + 1}; Lug Stress Check: {margin_lug}")
         print(f"{i + 1}; Pull Through Check: {margin_back_plate}, {margin_vehicle_plate}")
-        print(f"{i + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
         print(f"{i + 1}; Shear Out Bearing Lug Check: {shear_bearing_margin}, {P_bru}")
         print(f"{i + 1}; Shear Out Bearing Yield Lug Check: {shear_bearing_yield_margin}, {P_bry}")
         print(f"{i + 1}; Bushing Lug Check: {bushing_margin}, {P_bush_y}")
         print(f"{i + 1}; Transverse Lug Check: {ultimate_transverse_margin}, {P_tu_transverse}")
         print(f"{i + 1}; Transverse Yield Lug Check: {ultimate_transverse_yield_margin}, {P_ty_transverse}")
-
-
+        print(f"{i + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
 
         return master_json_data
 
