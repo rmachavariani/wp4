@@ -48,7 +48,7 @@ def check_bolt_pin_bending(hole_diameter, lug_thickness, lug_height, edge_to_cen
 
     K_tu = Tension_Efficiency_Factors_Graphs.tension_eff_graph(15, material.index_15, x_input)
     K_ty = Tension_Efficiency_Factors_Graphs.tension_eff_graph(15, material.index_15, x_input)
-    K_tu_12 = Tension_Efficiency_Factors_Graphs.tension_eff_graph(12, material.index_12, x_input)
+    K_tu_12 = Tension_Efficiency_Factors_Graphs.tension_eff_graph(12, material.index_12, lug_height / hole_diameter)
 
     ultimate_allowable_tension_load = 0.15 * K_tu_12 * A_br * material_ultimate_tensile_strength
 
@@ -59,7 +59,7 @@ def check_bolt_pin_bending(hole_diameter, lug_thickness, lug_height, edge_to_cen
     P_tu_transverse = margin_of_safety * K_tu * A_br * material_ultimate_tensile_strength
     P_ty_transverse = margin_of_safety * K_ty * A_br * material_ultimate_tensile_strength
 
-    ultimate_transverse_margin = (P_tu_transverse/transverse_load) - 1
-    ultimate_transverse_yield_margin = (P_ty_transverse/transverse_load) - 1
+    ultimate_transverse_margin = (transverse_load / P_tu_transverse) - 1
+    ultimate_transverse_yield_margin = (transverse_load / P_ty_transverse) - 1
 
     return P_tu_transverse, P_ty_transverse, ultimate_transverse_margin, ultimate_transverse_yield_margin

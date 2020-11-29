@@ -26,6 +26,7 @@ graph_15 = [curve_151, curve_152, curve_153, curve_158, curve_159, curve_1511]
 
 def tension_eff_graph(fig, index, x_input):  # index material to be found in the excel file, linking each materials to the above curves, see comments after each curve
     graph_picked = None
+
     if fig == 12:
         graph_picked = graph_12
 
@@ -38,25 +39,29 @@ def tension_eff_graph(fig, index, x_input):  # index material to be found in the
         try:
             curve_picked = graph_picked[n]
 
-            for i in curve_picked:
+            if curve_picked[-1][0] > x_input:
+                for j, i in enumerate(curve_picked):
 
-                if i[0] <= x_input <= curve_picked[curve_picked.index(i) + 1][0]:
-                    x1 = i[0]
-                    x2 = curve_picked[curve_picked.index(i) + 1][0]
+                    if j == len(curve_picked) - 1:
+                        break
 
-                    y1 = i[1]
-                    y2 = curve_picked[curve_picked.index(i) + 1][1]
-                    # print(y1,y2)
+                    if i[0] <= x_input <= curve_picked[curve_picked.index(i) + 1][0]:
+                        x1 = i[0]
+                        x2 = curve_picked[curve_picked.index(i) + 1][0]
 
-                    k = (x_input - x1) / (x2 - x1)
-                    # print(k)
+                        y1 = i[1]
+                        y2 = curve_picked[curve_picked.index(i) + 1][1]
+                        # print(y1,y2)
 
-                    output = (1 - k) * y1 + k * y2
+                        k = (x_input - x1) / (x2 - x1)
+                        # print(k)
 
-                    return output
+                        output = (1 - k) * y1 + k * y2
+
+                        return output
 
         except IndexError:
-            print(f"Wrong curve selected; curve {n}")
+            print(f"Wrong curve selected; curve {n} with graph {fig}")
 
     else:
         print(f"Wrong figure index provided in Tension_efficiency_Factors; figure {fig}, index {index}, x_input {x_input}")
