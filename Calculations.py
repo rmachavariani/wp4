@@ -18,16 +18,10 @@ import LugCheck
 with open('data.json', 'r+') as j:
     master_json_data = json.load(j)
 
-# Temp:
-print(f"-- Importing materials --")
-material_list = Importer.import_all_materials("material_sheet", ("metal", "none"))
-material_properties_attachment = material_list[0]
-material_properties_fastener = material_list[0]
-material_properties_vehicle = material_list[4]
-print(f"Done importing, starting iteration\n")
+debug = False
 
 
-def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_thickness, hole_diameter, inner_diameter, outer_diameter, horizontal_spacing,
+def iteration(json_file, it, width, height, lug_thickness, plate_thickness, wall_thickness, hole_diameter, inner_diameter, outer_diameter, horizontal_spacing,
               margins_list, masses):
 
     try:
@@ -161,38 +155,39 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
 
             master_json_data['iterations'].update(new_json_data)
 
-            # Print to console
-            # rv = 5
-            # print(f"{i + 1}; Calculating with: width = {round(width, rv)},"
-            #       f" height = {round(height, rv)},"  # w
-            #       f" lug_thickness = {round(lug_thickness, rv)},"  # t1
-            #       f" plate_thickness = {round(plate_thickness, rv)},"  # t2
-            #       f" wall_thickness = {round(wall_thickness, rv)},"  # t3
-            #       f" hole_diameter = {round(hole_diameter, rv)},"  # D1
-            #       f" inner_diameter = {round(inner_diameter, rv)},"  # Dfi = D2
-            #       f" outer_diameter = {round(outer_diameter, rv)},"  # Dfo
-            #       f" horizontal_spacing = {round(horizontal_spacing, rv)}")
-            #
-            # print(f"{i + 1}; Bearing Check: {bearing_check}")
-            # print(f"{i + 1}; Lug Stress Check: {margin_lug}")
-            # print(f"{i + 1}; Pull Through Check: {margin_back_plate}, {margin_vehicle_plate}")
-            # print(f"{i + 1}; Shear Out Bearing Lug Check: {shear_bearing_margin}, {P_bru}")
-            # print(f"{i + 1}; Shear Out Bearing Yield Lug Check: {shear_bearing_yield_margin}, {P_bry}")
-            # print(f"{i + 1}; Bushing Lug Check: {bushing_margin}, {P_bush_y}")
-            # print(f"{i + 1}; Transverse Lug Check: {ultimate_transverse_margin}, {P_tu_transverse}")
-            # print(f"{i + 1}; Transverse Yield Lug Check: {ultimate_transverse_yield_margin}, {P_ty_transverse}")
-            # print(f"{i + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
+            if debug:
+                # Print to console
+                rv = 5
+                print(f"{it + 1}; Calculating with: width = {round(width, rv)},"
+                      f" height = {round(height, rv)},"  # w
+                      f" lug_thickness = {round(lug_thickness, rv)},"  # t1
+                      f" plate_thickness = {round(plate_thickness, rv)},"  # t2
+                      f" wall_thickness = {round(wall_thickness, rv)},"  # t3
+                      f" hole_diameter = {round(hole_diameter, rv)},"  # D1
+                      f" inner_diameter = {round(inner_diameter, rv)},"  # Dfi = D2
+                      f" outer_diameter = {round(outer_diameter, rv)},"  # Dfo
+                      f" horizontal_spacing = {round(horizontal_spacing, rv)}")
+
+                print(f"{it + 1}; Bearing Check: {bearing_check}")
+                print(f"{it + 1}; Lug Stress Check: {margin_lug}")
+                print(f"{it + 1}; Pull Through Check: {margin_back_plate}, {margin_vehicle_plate}")
+                print(f"{it + 1}; Shear Out Bearing Lug Check: {shear_bearing_margin}, {P_bru}")
+                print(f"{it + 1}; Shear Out Bearing Yield Lug Check: {shear_bearing_yield_margin}, {P_bry}")
+                print(f"{it + 1}; Bushing Lug Check: {bushing_margin}, {P_bush_y}")
+                print(f"{it + 1}; Transverse Lug Check: {ultimate_transverse_margin}, {P_tu_transverse}")
+                print(f"{it + 1}; Transverse Yield Lug Check: {ultimate_transverse_yield_margin}, {P_ty_transverse}")
+                print(f"{it + 1}; Weight = {mass_fastener} + {mass_attachment} = {mass_fastener + mass_attachment}")
 
             # Graph
             all_margins = [bearing_check[0], bearing_check[1], margin_lug, margin_back_plate[0], margin_back_plate[1], margin_vehicle_plate[0], margin_vehicle_plate[1],
                            shear_bearing_margin, P_bru, shear_bearing_yield_margin, P_bry, bushing_margin, P_bush_y, ultimate_transverse_margin, P_tu_transverse,
                            ultimate_transverse_yield_margin, P_ty_transverse]
 
-            margin_details.append()
-
             if not None in all_margins:
+                margin_details.append(all_margins)
+                input_details.append([width, w_over_d, lug_thickness, plate_thickness, wall_thickness, inner_diameter, outer_diameter, horizontal_spacing])
                 margins_list.append(min(all_margins))
-                masses.append(mass_fastener + mass_attachment)
+                masses.append(float(mass_fastener + mass_attachment))
 
             return master_json_data
 
@@ -203,10 +198,50 @@ def iteration(json_file, i, width, height, lug_thickness, plate_thickness, wall_
         pass
 
 
+def save_data(json_file):
+    try:
+        with open(f'iterations_2_{material_number}.txt', 'w+', newline='') as file:
+            wr = csv.writer(file, quoting=csv.QUOTE_ALL)
+            wr.writerow(
+                ["Margin", "Mass", "Bearing_Check_1", "Bearing_Check_2", "Margin_Stress_Lug", "Margin_Back_Plate_1", "Margin_Back_Plate_2",
+                 "Margin_Vehicle_Plate_1", "Margin_Vehicle_Plate_2", "Shear_Bearing_Margin", "P_bru", "Shear_Bearing_Yield_Margin", "P_bry",
+                 "Bushing_Margin", "P_bush_y", "Ultimate_Transverse_Margin", "P_tu_transverse", "Ultimate_Transverse_Yield_Margin",
+                 "P_ty_Transverse",
+                 "Width", "W_over_D", "Lug_Thickness", "Plate_Thickness", "Wall_Thickness", "Inner_Diameter", "Outer_Diameter",
+                 "Horizontal_Spacing",
+                 "Material_Name", "Material_Type"])
+
+            for i, mass in enumerate(mass_list):
+                wr = csv.writer(file, quoting=csv.QUOTE_ALL)
+                wr.writerow(
+                    [margin_list[i], mass_list[i], margin_details[i][0], margin_details[i][1], margin_details[i][2], margin_details[i][3],
+                     margin_details[i][4],
+                     margin_details[i][5], margin_details[i][6], margin_details[i][7], margin_details[i][8], margin_details[i][9],
+                     margin_details[i][10],
+                     margin_details[i][1], margin_details[i][12], margin_details[i][13], margin_details[i][14], margin_details[i][15],
+                     margin_details[i][16],
+                     input_details[i][0], input_details[i][1], input_details[i][2], input_details[i][3], input_details[i][4],
+                     input_details[i][5],
+                     input_details[i][6], input_details[i][7], material_details[0], material_details[1]])
+
+        with open(f'data_iterations_2_{material_number}.json', 'w+') as j:
+            json.dump(json_file, j, indent=4, sort_keys=True)
+
+        print("Saved!")
+
+        with open('data.json', 'r+') as j:
+            json_file = json.load(j)
+
+        return json_file
+
+    except FileNotFoundError and PermissionError:
+        print("Error saving!")
+
+
 left = {"width": 0.05, "w_over_d": 1.1, "lug_thickness": 0.001, "plate_thickness": 0.0008, "wall_thickness": 0.0008,
         "inner_diameter": 0.001, "outer_diameter": 0.005, "horizontal_spacing": 0.0001}
 
-right = {"width": 0.1, "w_over_d": 5, "lug_thickness": 0.01, "plate_thickness": 0.2, "wall_thickness": 0.2,
+right = {"width": 0.1, "w_over_d": 5, "lug_thickness": 0.01, "plate_thickness": 0.02, "wall_thickness": 0.02,
          "inner_diameter": 0.005, "outer_diameter": 0.01, "horizontal_spacing": 0.001}
 
 steps = {"width": 4, "w_over_d": 4, "lug_thickness": 4, "plate_thickness": 4, "wall_thickness": 4,
@@ -216,14 +251,39 @@ total_iterations = 1
 for attribute in steps.keys():
     total_iterations *= steps[attribute]
 
+total_iterations *= 1
+
 print(f"Total iterations: {total_iterations}")
 
 step = 0
+material_number = 0
 state = {"negative": False, "positive": False}
 margin_list = []
 mass_list = []
 margin_details = []
+input_details = []
 first_iteration = True
+
+print(f"-- Importing materials --")
+material_list = Importer.import_all_materials("material_sheet", ("metal", "none"))
+print(material_list[0].type, material_list[1].type, material_list[2].type, material_list[3].type, material_list[4].type, material_list[5].type, material_list[6].type)
+
+material_properties_attachment = material_list[6]
+material_properties_fastener = material_list[6]
+material_properties_vehicle = material_list[6]
+
+print(f"Material: {material_properties_attachment.name} {material_properties_attachment.type}")
+material_details = [material_properties_attachment.name, material_properties_attachment.type]
+material_number += 1
+
+if not first_iteration:
+    master_json_data = save_data(master_json_data)
+    margin_list = []
+    mass_list = []
+    margin_details = []
+    input_details = []
+    material_details = []
+
 for width_step in np.linspace(left['width'], right['width'], steps['width']):
     for w_over_d_step in np.linspace(left['w_over_d'], right['w_over_d'], steps['w_over_d']):
         for lug_thickness_step in np.linspace(left['lug_thickness'], right['lug_thickness'], steps['lug_thickness']):
@@ -243,31 +303,18 @@ for width_step in np.linspace(left['width'], right['width'], steps['width']):
 
                                     step += 1
 
-                                    if iteration_data is not None and step % 100 == 0:
+                                    if iteration_data is not None:
                                         master_json_data = iteration_data
-                                        print(f"Step {step}; Percentage finished {round((step * 100)/ total_iterations, 2)} %")
+
+                                    if step % 100 == 0:
+                                        print(f"Step {step}; Percentage finished {round((step * 100) / total_iterations, 2)} %")
 
                                     if first_iteration:
                                         delta_time = time.time() - start_time
-                                        print(f"expected time = {(delta_time * total_iterations) / 60} min")
+                                        print(f"expected time = {round((delta_time * total_iterations) / 60, 2)} min")
                                         first_iteration = False
 
-with open('data_iterations.json', 'w+') as j:
-    json.dump(master_json_data, j, indent=4, sort_keys=True)
+save_data(master_json_data)
 
-try:
-    with open('iterations.xlsx', 'w+', newline='') as file:
-        wr = csv.writer(file, quoting=csv.QUOTE_ALL)
-        wr.writerow(["Margin", "Mass"])
-        for i in range(len(margin_list)):
-            wr = csv.writer(file, quoting=csv.QUOTE_ALL)
-            wr.writerow([margin_list[i], mass_list[i]])
-
-    print("Saved!")
-
-except FileNotFoundError and PermissionError:
-    print("Error saving!")
-
-
-plt.plot(margin_list, mass_list)
+plt.plot(margin_list, mass_list, 'o')
 plt.show()
