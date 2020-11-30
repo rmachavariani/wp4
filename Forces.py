@@ -1,6 +1,6 @@
 import numpy as np
 
-debug = False
+debug = True
 
 
 def rotational(inertia, mass_object, body, torque, array_com):
@@ -36,8 +36,8 @@ def rotational(inertia, mass_object, body, torque, array_com):
     moments[3] = np.sum(a=moments, axis=0) - moments[3]
 
     if debug:
-        print(forces)
-        print(moments)
+        print("F1: \n", forces)
+        print("M1: \n", moments)
 
     return forces, moments
 
@@ -48,7 +48,7 @@ def launch(mass_object, launch_acceleration):
     forces[3][2] = float(mass_object['solar_panels']) * launch_acceleration
 
     if debug:
-        print(forces)
+        print("F2: \n", forces)
 
     return forces
 
@@ -73,5 +73,5 @@ def calc_forces(inertia, mass_object, body, torque, array_com, launch_accelerati
             forces[row][column] = max(rotational_forces[row][column], launch_forces[row][column])
 
     moments = rotational_moments
-
+    print("FT: \n", forces, "\nMT: \n", moments)
     return forces, moments

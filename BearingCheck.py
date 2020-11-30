@@ -26,6 +26,7 @@ def bearing_check(height, diameter, material, horizontal_spacing, area, thicknes
 
         margins = get_stress_check(inplane_forces[0], inplane_forces[2], inplane_forces[1], diameter, thickness, wall_thickness, allowable_stress,
                                    wall_allowable_stress, thermal_stresses)
+
         return margins, coordinates_array, fasteners.fastener_count
 
 
@@ -166,7 +167,8 @@ def isAllowable(sigma_allowable, sigma_bearing):
             print("Allowable bearing stress check passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
         return margin
     else:
-        print("Allowable bearing stress check not passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
+        if debug:
+            print("Allowable bearing stress check not passed with bearing stress of " + str(sigma_bearing) + " Pa and allowable stress of " + str(sigma_allowable) + " Pa")
         raise ValueError('Bearing stress check not passed. Process terminated. ')
 
 
@@ -177,9 +179,12 @@ def get_stress_check (F_inplane_x, F_inplane_y, F_inplane_z, D, t, t_wall, sigma
 
     if debug:
         print("Checking plate allowable stress:")
+
     isPlateAllowable = isAllowable(sigma_allowable, sigma_bearing)
+
     if debug:
         print("Checking wall allowable stress:")
+
     isWallAllowable = isAllowable(sigma_wall_allowable, sigma_wall_bearing)
 
     return isPlateAllowable, isWallAllowable

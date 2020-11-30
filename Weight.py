@@ -20,7 +20,6 @@ def calc_mass_attachment(plate_thickness, width, height, number, inner_diameter,
 
     total_volume = volume_backup_plate + number * volume_lug
 
-    print(f"mass {total_volume} {lug_density}")
     weight_attachment = lug_density * total_volume
 
     return weight_attachment
