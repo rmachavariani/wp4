@@ -1,0 +1,1 @@
+This project supports report for AE2111-I Aerospace System Design course. Code has been written in the group of 6, this is not entirely personal project.
